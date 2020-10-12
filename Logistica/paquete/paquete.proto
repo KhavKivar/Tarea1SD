@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+
+option go_package = "google.golang.org/TAREA1SD/Logistica/paquete";
+
+package paquete;
+
+
+
+
+// Servicios de logistica y cliente
+service logistica_cliente {
+    // Enviar un pedido
+    rpc EnviarPedido (orden) returns (orden_recibida) {}
+
+  }
+  message orden{
+    string id = 1;
+    string producto = 2;
+    int32 valor = 3;
+    string tienda = 4;
+    string destino = 5;
+    int32 prioritario = 6;
+  }
+  
+  message orden_recibida{
+      string message = 1;
+  }
+
