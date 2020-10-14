@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LogisticaClienteClient interface {
 	// Enviar un pedido
 	EnviarPedido(ctx context.Context, in *Orden, opts ...grpc.CallOption) (*OrdenRecibida, error)
+	SolicitarSeguimiento(ctx context.Context, in *Seguimiento, opts ...grpc.CallOption) (*Estado, error)
 }
 
 type logisticaClienteClient struct {
@@ -38,12 +39,22 @@ func (c *logisticaClienteClient) EnviarPedido(ctx context.Context, in *Orden, op
 	return out, nil
 }
 
+func (c *logisticaClienteClient) SolicitarSeguimiento(ctx context.Context, in *Seguimiento, opts ...grpc.CallOption) (*Estado, error) {
+	out := new(Estado)
+	err := c.cc.Invoke(ctx, "/paquete.logistica_cliente/SolicitarSeguimiento", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LogisticaClienteServer is the server API for LogisticaCliente service.
 // All implementations must embed UnimplementedLogisticaClienteServer
 // for forward compatibility
 type LogisticaClienteServer interface {
 	// Enviar un pedido
 	EnviarPedido(context.Context, *Orden) (*OrdenRecibida, error)
+	SolicitarSeguimiento(context.Context, *Seguimiento) (*Estado, error)
 	mustEmbedUnimplementedLogisticaClienteServer()
 }
 
@@ -53,6 +64,9 @@ type UnimplementedLogisticaClienteServer struct {
 
 func (UnimplementedLogisticaClienteServer) EnviarPedido(context.Context, *Orden) (*OrdenRecibida, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnviarPedido not implemented")
+}
+func (UnimplementedLogisticaClienteServer) SolicitarSeguimiento(context.Context, *Seguimiento) (*Estado, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitarSeguimiento not implemented")
 }
 func (UnimplementedLogisticaClienteServer) mustEmbedUnimplementedLogisticaClienteServer() {}
 
@@ -85,6 +99,24 @@ func _LogisticaCliente_EnviarPedido_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LogisticaCliente_SolicitarSeguimiento_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Seguimiento)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LogisticaClienteServer).SolicitarSeguimiento(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/paquete.logistica_cliente/SolicitarSeguimiento",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LogisticaClienteServer).SolicitarSeguimiento(ctx, req.(*Seguimiento))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "paquete.logistica_cliente",
 	HandlerType: (*LogisticaClienteServer)(nil),
@@ -92,6 +124,10 @@ var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EnviarPedido",
 			Handler:    _LogisticaCliente_EnviarPedido_Handler,
+		},
+		{
+			MethodName: "SolicitarSeguimiento",
+			Handler:    _LogisticaCliente_SolicitarSeguimiento_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
