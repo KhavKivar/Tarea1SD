@@ -33,11 +33,20 @@ type orden struct {
 	seguimiento string
 }
 
+type paquete struct{
+	id string
+	seguimiento string
+	tipo string
+	valor int32
+	intentos int32
+	estado string
+}
+
 var ordenes []orden
 
-var retail []orden
-var normal []orden
-var prioritario []orden
+var retail []paquete
+var normal []paquete
+var prioritario []paquete
 
 var num_seguimiento int
 
@@ -45,6 +54,7 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	log.Printf("Pedido Recibido Con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
 
 	var orden_nueva orden
+	var pack paquete
 
 	orden_nueva.timestamp = ""
 	orden_nueva.id = in.GetId()
@@ -54,18 +64,31 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	orden_nueva.destino = in.GetDestino()
 	orden_nueva.prioritario = in.GetPrioritario()
 	orden_nueva.estado = "En bodega"
+	orden_nueva.seguimiento = "0"
+
+	pack.id = in.GetId()
+	pack.seguimiento = "0"
+	pack.tipo = ""
+	pack.valor = in.GetValor()
+	pack.intentos = 0
+	pack.estado = "En bodega"
+
 
 	if in.GetTienda() == "pyme" {
 		orden_nueva.seguimiento = strconv.Itoa(num_seguimiento)
+		pack.seguimiento = strconv.Itoa(num_seguimiento)
 		num_seguimiento = num_seguimiento + 1
+		
 		if orden_nueva.prioritario == 1 {
-			prioritario = append(prioritario, orden_nueva)
+			pack.tipo = "prioritario"
+			prioritario = append(prioritario, pack)
 		} else {
-			normal = append(normal, orden_nueva)
+			pack.tipo = "normal"
+			normal = append(normal, pack)
 		}
-	} else {
-		orden_nueva.seguimiento = "0"
-		retail = append(retail, orden_nueva)
+	}else {
+		pack.tipo = "retail"
+		retail = append(retail, pack)
 	}
 
 	ordenes = append(ordenes, orden_nueva)
