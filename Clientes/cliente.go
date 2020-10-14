@@ -28,6 +28,7 @@ func main() {
 		fmt.Print("Ingrese 1 o 2 para realizar las siguientes tareas\n")
 		fmt.Print("1) Realizar un pedido \n")
 		fmt.Print("2) Ver estado de un pedido \n")
+		fmt.Print("3) Salir \n")
 		text, _ := reader.ReadString('\n')
 		if text == "1\n" {
 			fmt.Print("Ingrese 1 para simular una tienda de Pyme o 2 para retails\n")
@@ -123,6 +124,11 @@ func main() {
 				}
 			}
 		}
+		if text == "3\n" {
+			fmt.Print("Adios\n")
+			os.Exit(0)
+		}	
+	
 	}
 
 }
