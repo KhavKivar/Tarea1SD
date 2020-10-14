@@ -12,6 +12,7 @@ package paquete;
 service logistica_cliente {
     // Enviar un pedido
     rpc EnviarPedido (orden) returns (orden_recibida) {}
+    rpc SolicitarSeguimiento (seguimiento) returns (estado) {}
 
   }
   message orden{
@@ -27,3 +28,10 @@ service logistica_cliente {
       string message = 1;
   }
 
+  message seguimiento{
+    string seguimiento = 1;
+  }
+  
+  message estado{
+      string estado = 1;
+  }

@@ -34,7 +34,8 @@ type orden struct {
 var ordenes []orden
 
 var retail []orden
-var pyme []orden
+var normal []orden
+var prioritario []orden
 
 var num_seguimiento int
 
@@ -56,8 +57,14 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	if in.GetTienda() == "pyme" {
 		orden_nueva.seguimiento = strconv.Itoa(num_seguimiento)
 		num_seguimiento = num_seguimiento + 1
+		if(orden_nueva.prioritario == 1){
+			prioritario = append(prioritario,orden_nueva)
+		}else{
+			normal = append(normal,orden_nueva)
+		}
 	}else {
 		orden_nueva.seguimiento = "0"
+		retail = append(retail,orden_nueva)
 	}
 
 	ordenes = append(ordenes,orden_nueva)
@@ -65,6 +72,20 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 
 	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId()}, nil
 }
+
+
+func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
+	i := 0
+	log.Printf("Consulta recibida por el numero de seguimiento: %v", in.GetSeguimiento())
+	for i < len(ordenes){
+		if (ordenes[i].seguimiento == in.GetSeguimiento() && in.GetSeguimiento() != "0"){
+			return &pb.Estado{Estado: "El estado de la orden es " + ordenes[i].estado}, nil
+		}
+		i++
+	}
+	return &pb.Estado{Estado: "La orden no existe"}, nil
+}
+
 
 func main() {
 	

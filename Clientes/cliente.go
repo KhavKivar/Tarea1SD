@@ -25,7 +25,7 @@ func main() {
 	for true {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Bienvenido a la simulacion de PrestigioExpress \n")
-		fmt.Print("Ingrese 1 o 2 para realizar las siguientes tareas\n")
+		fmt.Print("Ingrese 1, 2 o 3 para realizar las siguientes tareas\n")
 		fmt.Print("1) Realizar un pedido \n")
 		fmt.Print("2) Ver estado de un pedido \n")
 		fmt.Print("3) Salir \n")
@@ -124,6 +124,31 @@ func main() {
 				}
 			}
 		}
+		
+		if text == "2\n" {
+			fmt.Print("Ingresa el codigo de seguimiento del pedido\n")
+			text, _ := reader.ReadString('\n')
+			conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+			
+			if err != nil {
+				log.Fatalf("did not connect: %v", err)
+			}
+			defer conn.Close()
+			
+			c := pb.NewLogisticaClienteClient(conn)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			re, err := c.SolicitarSeguimiento(ctx, &pb.Seguimiento{Seguimiento: text})
+			
+			if err != nil {
+				log.Fatalf("No se puedo enviar el mensaje: %v \n", err)
+			}
+			
+			log.Printf("%s", re.GetEstado())
+			duration := time.Duration(1) * time.Second
+			time.Sleep(duration)
+		}
+		
 		if text == "3\n" {
 			fmt.Print("Adios\n")
 			os.Exit(0)
