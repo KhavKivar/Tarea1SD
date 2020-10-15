@@ -17,9 +17,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LogisticaClienteClient interface {
-	// Enviar un pedido
+	// Servicios Logistica-Cliente
 	EnviarPedido(ctx context.Context, in *Orden, opts ...grpc.CallOption) (*OrdenRecibida, error)
 	SolicitarSeguimiento(ctx context.Context, in *Seguimiento, opts ...grpc.CallOption) (*Estado, error)
+	// Servicios Logistica-Camion
+	SolicitudPaquetes(ctx context.Context, in *TipoCamion, opts ...grpc.CallOption) (*Paquete, error)
 }
 
 type logisticaClienteClient struct {
@@ -48,13 +50,24 @@ func (c *logisticaClienteClient) SolicitarSeguimiento(ctx context.Context, in *S
 	return out, nil
 }
 
+func (c *logisticaClienteClient) SolicitudPaquetes(ctx context.Context, in *TipoCamion, opts ...grpc.CallOption) (*Paquete, error) {
+	out := new(Paquete)
+	err := c.cc.Invoke(ctx, "/paquete.logistica_cliente/SolicitudPaquetes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LogisticaClienteServer is the server API for LogisticaCliente service.
 // All implementations must embed UnimplementedLogisticaClienteServer
 // for forward compatibility
 type LogisticaClienteServer interface {
-	// Enviar un pedido
+	// Servicios Logistica-Cliente
 	EnviarPedido(context.Context, *Orden) (*OrdenRecibida, error)
 	SolicitarSeguimiento(context.Context, *Seguimiento) (*Estado, error)
+	// Servicios Logistica-Camion
+	SolicitudPaquetes(context.Context, *TipoCamion) (*Paquete, error)
 	mustEmbedUnimplementedLogisticaClienteServer()
 }
 
@@ -67,6 +80,9 @@ func (UnimplementedLogisticaClienteServer) EnviarPedido(context.Context, *Orden)
 }
 func (UnimplementedLogisticaClienteServer) SolicitarSeguimiento(context.Context, *Seguimiento) (*Estado, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SolicitarSeguimiento not implemented")
+}
+func (UnimplementedLogisticaClienteServer) SolicitudPaquetes(context.Context, *TipoCamion) (*Paquete, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SolicitudPaquetes not implemented")
 }
 func (UnimplementedLogisticaClienteServer) mustEmbedUnimplementedLogisticaClienteServer() {}
 
@@ -117,6 +133,24 @@ func _LogisticaCliente_SolicitarSeguimiento_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LogisticaCliente_SolicitudPaquetes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TipoCamion)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LogisticaClienteServer).SolicitudPaquetes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/paquete.logistica_cliente/SolicitudPaquetes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LogisticaClienteServer).SolicitudPaquetes(ctx, req.(*TipoCamion))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "paquete.logistica_cliente",
 	HandlerType: (*LogisticaClienteServer)(nil),
@@ -128,6 +162,10 @@ var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SolicitarSeguimiento",
 			Handler:    _LogisticaCliente_SolicitarSeguimiento_Handler,
+		},
+		{
+			MethodName: "SolicitudPaquetes",
+			Handler:    _LogisticaCliente_SolicitudPaquetes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

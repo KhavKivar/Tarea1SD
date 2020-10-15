@@ -8,13 +8,29 @@ package paquete;
 
 
 
-// Servicios de logistica y cliente
+// Servicios de logistica,cliente y camiones
 service logistica_cliente {
-    // Enviar un pedido
+    // Servicios Logistica-Cliente
     rpc EnviarPedido (orden) returns (orden_recibida) {}
     rpc SolicitarSeguimiento (seguimiento) returns (estado) {}
 
+    // Servicios Logistica-Camion
+    rpc SolicitudPaquetes (tipoCamion) returns (paquete){}
+
   }
+  message tipoCamion{
+    string tipo=1;
+  }
+
+  message paquete{
+    string id = 1;
+    string seguimiento = 2;
+    string tipo = 3;
+    int32 valor = 4;
+    int32 intentos = 5;
+    string estado = 6;
+  }
+
   message orden{
     string id = 1;
     string producto = 2;

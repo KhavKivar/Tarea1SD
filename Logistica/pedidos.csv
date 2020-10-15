@@ -1,1 +1,21 @@
 timestamp,id,producto,valor,tienda,destino,prioritario,seguimiento
+2020-10-15 14:32:29,SA1554KF,Polera,10,tienda-A,casa-A,0,0,En bodega
+2020-10-15 14:32:30,SA1684AH,Pantalón,12,tienda-B,casa-B,0,0,En bodega
+2020-10-15 14:32:31,SA5698PO,Televisor,110,tienda-C,casa-C,0,0,En bodega
+2020-10-15 14:32:32,SA5897AS,Consola de Videojuegos,95,tienda-A,casa-D,0,0,En bodega
+2020-10-15 14:32:33,SA1589GD,Lavadora,100,tienda-B,casa-Q,0,0,En bodega
+2020-10-15 14:32:34,SA8859SS,Polerón,15,tienda-C,casa-A,0,0,En bodega
+2020-10-15 14:32:35,SA5713AS,Parca,20,tienda-B,casa-C,0,0,En bodega
+2020-10-15 14:32:36,SA2589TR,Pelota,5,tienda-C,casa-P,0,0,En bodega
+2020-10-15 14:32:37,SA1597EF,Raqueta,20,tienda-A,casa-F,0,0,En bodega
+2020-10-15 14:32:38,SA3574FG,Refrigerador,120,tienda-B,casa-U,0,0,En bodega
+2020-10-15 14:32:39,SA3698HJ,Tostador,25,tienda-C,casa-A,0,0,En bodega
+2020-10-15 14:32:40,SA2563AS,Perfume,15,tienda-A,casa-N,0,0,En bodega
+2020-10-15 14:32:41,SA1937JH,Tobillera,6,tienda-C,casa-N,0,0,En bodega
+2020-10-15 14:32:42,SA5648AA,Notebook,80,tienda-B,casa-A,0,0,En bodega
+2020-10-15 14:32:43,SA6947GH,Set de ollas,50,tienda-C,casa-C,0,0,En bodega
+2020-10-15 14:32:44,SA5588HJ,Parlante,25,tienda-C,casa-E,0,0,En bodega
+2020-10-15 14:32:45,SA6644DS,Lampara,30,tienda-A,casa-A,0,0,En bodega
+2020-10-15 14:32:46,SA5974AA,Sillón,105,tienda-C,casa-C,0,0,En bodega
+2020-10-15 14:32:47,SA2596NH,Mesa,90,tienda-A,casa-S,0,0,En bodega
+2020-10-15 14:32:48,SA7748JK,Cama,115,tienda-B,casa-A,0,0,En bodega

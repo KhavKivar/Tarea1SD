@@ -16,24 +16,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	port = ":50051"
-)
-
 type server struct {
 	pb.UnimplementedLogisticaClienteServer
-}
-
-type orden struct {
-	timestamp   string
-	id          string
-	producto    string
-	valor       int32
-	tienda      string
-	destino     string
-	prioritario int32
-	estado      string
-	seguimiento string
 }
 
 type paquete struct {
@@ -45,8 +29,7 @@ type paquete struct {
 	estado      string
 }
 
-var ordenes []orden
-
+var allQueue []paquete
 var retail []paquete
 var normal []paquete
 var prioritario []paquete
@@ -54,34 +37,21 @@ var prioritario []paquete
 var numSeguimiento int
 
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
-	log.Printf("Pedido Recibido Con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
+	log.Printf("Pedido Recibido con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
 
-	var ordenNueva orden
+	//Se crea el paquete, y se añade a la cola correspondiente
 	var pack paquete
-	t := time.Now()
-	ordenNueva.timestamp = t.Format("2006-01-02 15:04:05")
-	ordenNueva.id = in.GetId()
-	ordenNueva.producto = in.GetProducto()
-	ordenNueva.valor = in.GetValor()
-	ordenNueva.tienda = in.GetTienda()
-	ordenNueva.destino = in.GetDestino()
-	ordenNueva.prioritario = in.GetPrioritario()
-	ordenNueva.estado = "En bodega"
-	ordenNueva.seguimiento = "0"
-
 	pack.id = in.GetId()
-	pack.seguimiento = "0"
-	pack.tipo = ""
 	pack.valor = in.GetValor()
+	pack.tipo = "0"
+	pack.seguimiento = "0"
 	pack.intentos = 0
 	pack.estado = "En bodega"
 
 	if in.GetTienda() == "pyme" {
-		ordenNueva.seguimiento = strconv.Itoa(numSeguimiento)
 		pack.seguimiento = strconv.Itoa(numSeguimiento)
 		numSeguimiento = numSeguimiento + 1
-
-		if ordenNueva.prioritario == 1 {
+		if in.GetPrioritario() == 1 {
 			pack.tipo = "prioritario"
 			prioritario = append(prioritario, pack)
 		} else {
@@ -92,50 +62,82 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		pack.tipo = "retail"
 		retail = append(retail, pack)
 	}
+	allQueue = append(allQueue, pack)
 
 	//Se añade el pedido al archivo pedidos.csv
 	f, err := os.OpenFile("pedidos.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	t := time.Now()
 	if err != nil {
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString(ordenNueva.timestamp + "," + ordenNueva.id + "," + ordenNueva.producto + "," + fmt.Sprint(ordenNueva.valor) + "," + ordenNueva.tienda + "," + ordenNueva.destino + "," + fmt.Sprint(ordenNueva.prioritario) + "," + ordenNueva.seguimiento + "\n"); err != nil {
+	if _, err := f.WriteString(t.Format("2006-01-02 15:04:05") + "," + in.GetId() + "," + in.GetProducto() + "," + fmt.Sprint(in.GetValor()) + "," + in.GetTienda() + "," + in.GetDestino() + "," + fmt.Sprint(in.GetPrioritario()) + "," + pack.seguimiento + "," + "En bodega" + "\n"); err != nil {
 		log.Println(err)
 	}
 
-	ordenes = append(ordenes, ordenNueva)
-	log.Printf("El numero de seguimiento de la orden es: %v", ordenNueva.seguimiento)
-	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ", Tu numero de seguimiento es:" + ordenNueva.seguimiento}, nil
+	log.Printf("Se envio Numero de seguimiento")
+	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ",Tu numero de seguimiento es:" + pack.seguimiento}, nil
 }
 
 func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
 	i := 0
 	log.Printf("Consulta recibida por el numero de seguimiento: %v", in.GetSeguimiento())
-	for i < len(ordenes) {
-		var x = strings.TrimSuffix(ordenes[i].seguimiento, "\n")
+	for i < len(allQueue) {
+		var x = strings.TrimSuffix(allQueue[i].seguimiento, "\n")
 		var y = strings.TrimSuffix(in.GetSeguimiento(), "\n")
 		if x == y && in.GetSeguimiento() != "0" {
-			return &pb.Estado{Estado: "El estado de la orden es " + ordenes[i].estado}, nil
+			return &pb.Estado{Estado: "El estado de la orden es " + allQueue[i].estado}, nil
 		}
 		i++
 	}
 	return &pb.Estado{Estado: "La orden no existe"}, nil
 }
 
-func main() {
+func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.Paquete, error) {
+	log.Printf("Camion %v solicita pedido\n", in.Tipo)
+	log.Printf("Enviando paquete")
+	return &pb.Paquete{Id: "hola", Seguimiento: "hola", Tipo: "hola", Valor: 1, Intentos: 1, Estado: "hola"}, nil
+}
 
-	numSeguimiento = 11111
+const (
+	port  = ":50051"
+	port2 = ":50052"
+)
 
-	lis, err := net.Listen("tcp", port)
-
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+func runServer(l net.Listener) {
 	s := grpc.NewServer()
 	pb.RegisterLogisticaClienteServer(s, &server{})
-
-	if err := s.Serve(lis); err != nil {
+	if err := s.Serve(l); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 
+}
+
+func main() {
+	numSeguimiento = 11111
+	//Eliminar pedidos.csv
+	var err = os.Remove("pedidos.csv")
+	if err != nil {
+		return
+	}
+	f, err := os.OpenFile("pedidos.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+	if _, err := f.WriteString("timestamp,id,producto,valor,tienda,destino,prioritario,seguimiento\n"); err != nil {
+		log.Println(err)
+	}
+
+	//List port 50051 y 50052
+	lis, err := net.Listen("tcp", port)
+	lisCamion, err2 := net.Listen("tcp", port2)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	if err2 != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	//Servers
+
+	go runServer(lis)
+	runServer(lisCamion)
 }
