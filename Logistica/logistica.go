@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
+	"time"
 
 	//"fmt"
 	"strconv"
@@ -33,13 +36,13 @@ type orden struct {
 	seguimiento string
 }
 
-type paquete struct{
-	id string
+type paquete struct {
+	id          string
 	seguimiento string
-	tipo string
-	valor int32
-	intentos int32
-	estado string
+	tipo        string
+	valor       int32
+	intentos    int32
+	estado      string
 }
 
 var ordenes []orden
@@ -48,23 +51,23 @@ var retail []paquete
 var normal []paquete
 var prioritario []paquete
 
-var num_seguimiento int
+var numSeguimiento int
 
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
 	log.Printf("Pedido Recibido Con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
 
-	var orden_nueva orden
+	var ordenNueva orden
 	var pack paquete
-
-	orden_nueva.timestamp = ""
-	orden_nueva.id = in.GetId()
-	orden_nueva.producto = in.GetProducto()
-	orden_nueva.valor = in.GetValor()
-	orden_nueva.tienda = in.GetTienda()
-	orden_nueva.destino = in.GetDestino()
-	orden_nueva.prioritario = in.GetPrioritario()
-	orden_nueva.estado = "En bodega"
-	orden_nueva.seguimiento = "0"
+	t := time.Now()
+	ordenNueva.timestamp = t.Format("2006-01-02 15:04:05")
+	ordenNueva.id = in.GetId()
+	ordenNueva.producto = in.GetProducto()
+	ordenNueva.valor = in.GetValor()
+	ordenNueva.tienda = in.GetTienda()
+	ordenNueva.destino = in.GetDestino()
+	ordenNueva.prioritario = in.GetPrioritario()
+	ordenNueva.estado = "En bodega"
+	ordenNueva.seguimiento = "0"
 
 	pack.id = in.GetId()
 	pack.seguimiento = "0"
@@ -73,28 +76,36 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	pack.intentos = 0
 	pack.estado = "En bodega"
 
-
 	if in.GetTienda() == "pyme" {
-		orden_nueva.seguimiento = strconv.Itoa(num_seguimiento)
-		pack.seguimiento = strconv.Itoa(num_seguimiento)
-		num_seguimiento = num_seguimiento + 1
-		
-		if orden_nueva.prioritario == 1 {
+		ordenNueva.seguimiento = strconv.Itoa(numSeguimiento)
+		pack.seguimiento = strconv.Itoa(numSeguimiento)
+		numSeguimiento = numSeguimiento + 1
+
+		if ordenNueva.prioritario == 1 {
 			pack.tipo = "prioritario"
 			prioritario = append(prioritario, pack)
 		} else {
 			pack.tipo = "normal"
 			normal = append(normal, pack)
 		}
-	}else {
+	} else {
 		pack.tipo = "retail"
 		retail = append(retail, pack)
 	}
 
-	ordenes = append(ordenes, orden_nueva)
-	log.Printf("El numero de seguimiento de la orden es: %v", orden_nueva.seguimiento)
+	//Se añade el pedido al archivo pedidos.csv
+	f, err := os.OpenFile("pedidos.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+	if _, err := f.WriteString(ordenNueva.timestamp + "," + ordenNueva.id + "," + ordenNueva.producto + "," + fmt.Sprint(ordenNueva.valor) + "," + ordenNueva.tienda + "," + ordenNueva.destino + "," + fmt.Sprint(ordenNueva.prioritario) + "," + ordenNueva.seguimiento + "\n"); err != nil {
+		log.Println(err)
+	}
 
-	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId()}, nil
+	ordenes = append(ordenes, ordenNueva)
+	log.Printf("El numero de seguimiento de la orden es: %v", ordenNueva.seguimiento)
+	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ", Tu numero de seguimiento es:" + ordenNueva.seguimiento}, nil
 }
 
 func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
@@ -113,7 +124,7 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 
 func main() {
 
-	num_seguimiento = 11111
+	numSeguimiento = 11111
 
 	lis, err := net.Listen("tcp", port)
 
