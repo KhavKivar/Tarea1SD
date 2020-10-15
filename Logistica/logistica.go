@@ -93,7 +93,7 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	}
 
 	log.Printf("Se envio Numero de seguimiento")
-	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ",Tu numero de seguimiento es:" + ord.seguimiento}, nil
+	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + ",Tu numero de seguimiento es: " + ord.seguimiento}, nil
 }
 
 func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
@@ -112,8 +112,42 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 
 func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.Paquete, error) {
 	log.Printf("Camion %v solicita pedido\n", in.Tipo)
-	log.Printf("Enviando paquete")
-	return &pb.Paquete{Id: "hola", Seguimiento: "hola", Tipo: "hola", Valor: 1, Intentos: 1, Estado: "hola"}, nil
+	var y string = strings.TrimSuffix(in.Tipo, "\n")
+	if y == "retails" {
+		//Ver si hay paquetes en retails o prioritario
+		if len(retail) > 0 {
+			var aux = retail[0]
+			//Dequeue
+			retail = retail[1:]
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
+		}
+		if len(prioritario) > 0 {
+			var aux = prioritario[0]
+			//Dequeue
+			prioritario = prioritario[1:]
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
+		}
+	}
+	if y == "normal" {
+		//Ver si hay paquetes en prioritario o normal
+		if len(prioritario) > 0 {
+			var aux = prioritario[0]
+			//Dequeue
+			prioritario = prioritario[1:]
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
+		}
+		if len(normal) > 0 {
+			var aux = normal[0]
+			//Dequeue
+			normal = normal[1:]
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
+		}
+	}
+	return &pb.Paquete{Id: "null"}, nil
 }
 
 const (

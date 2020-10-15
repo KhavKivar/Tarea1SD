@@ -13,6 +13,18 @@ const (
 	address = "localhost:50052"
 )
 
+func dispatcher(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.SolicitudPaquetes(ctx, &pb.TipoCamion{Tipo: tipoCamion})
+	if err != nil {
+		log.Fatalf("Error al obtener el paquete: %v", err)
+	}
+	if r.GetId() != "null" {
+		log.Printf("Paquete recibido: id:%v, Origen: %v, Destino:%v, Camion encargado: %v", r.GetId(), r.GetOrigen(), r.GetDestino(), idCamion)
+	}
+
+}
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -21,13 +33,18 @@ func main() {
 
 	defer conn.Close()
 	c := pb.NewLogisticaClienteClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	r, err := c.SolicitudPaquetes(ctx, &pb.TipoCamion{Tipo: "retails"})
-	if err != nil {
-		log.Fatalf("Error al obtener el paquete: %v", err)
+	r1 := time.NewTicker(500 * time.Millisecond)
+	r2 := time.NewTicker(500 * time.Millisecond)
+	n0 := time.NewTicker(500 * time.Millisecond)
+	for {
+		select {
+		case <-r1.C:
+			go dispatcher(c, "retails", "Retails 1")
+		case <-r2.C:
+			go dispatcher(c, "retails", "Retails 2")
+		case <-n0.C:
+			go dispatcher(c, "normal", "normal")
+		}
 	}
-	log.Printf("Paquete recibido: id:%v, tipo: %v, valor :%v ,intentos: %v,estado:%v, seguimiento:%s", r.GetId(), r.GetTipo(), r.GetValor(), r.GetIntentos(), r.GetEstado(), r.GetSeguimiento())
 
 }
