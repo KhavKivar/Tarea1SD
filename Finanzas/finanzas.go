@@ -48,9 +48,7 @@ func calcularBalance(nuevo final){
 	balance_prod = 0
 	
 	if(nuevo.Tipo == "retail"){
-		log.Printf("%f",nuevo.Balance)
 		balance_prod= float64(nuevo.Valor) - float64((10 * (nuevo.Intentos - 1)))
-		log.Printf("%f",nuevo.Balance)
 		ingresos = float64(nuevo.Valor)
 		gastos = float64(10 * (nuevo.Intentos - 1))
 	}else if(nuevo.Tipo == "prioritario"){
