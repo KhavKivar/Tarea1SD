@@ -24,11 +24,11 @@ service logistica_cliente {
 
   message paquete{
     string id = 1;
-    string seguimiento = 2;
-    string tipo = 3;
-    int32 valor = 4;
-    int32 intentos = 5;
-    string estado = 6;
+    string tipo = 2;
+    int32 valor = 3;
+    string origen = 4;
+    string destino = 5;
+    int32 intentos = 6;
   }
 
   message orden{

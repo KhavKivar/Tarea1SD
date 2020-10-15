@@ -20,16 +20,25 @@ type server struct {
 	pb.UnimplementedLogisticaClienteServer
 }
 
-type paquete struct {
+type orden struct {
 	id          string
-	seguimiento string
-	tipo        string
-	valor       int32
-	intentos    int32
 	estado      string
+	idCamion    string
+	seguimiento string
+	intentos    int32
 }
 
-var allQueue []paquete
+type paquete struct {
+	id       string
+	tipo     string
+	valor    int32
+	origen   string
+	destino  string
+	intentos int32
+}
+
+var allQueue []orden
+
 var retail []paquete
 var normal []paquete
 var prioritario []paquete
@@ -38,18 +47,25 @@ var numSeguimiento int
 
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
 	log.Printf("Pedido Recibido con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
+	var pack paquete
+	var ord orden
+
+	//Se crea la orden
+	ord.id = in.GetId()
+	ord.estado = "En bodega"
+	ord.idCamion = ""
+	ord.seguimiento = "0"
+	ord.intentos = 0
 
 	//Se crea el paquete, y se añade a la cola correspondiente
-	var pack paquete
 	pack.id = in.GetId()
 	pack.valor = in.GetValor()
-	pack.tipo = "0"
-	pack.seguimiento = "0"
+	pack.origen = in.GetTienda()
+	pack.destino = in.GetDestino()
 	pack.intentos = 0
-	pack.estado = "En bodega"
 
 	if in.GetTienda() == "pyme" {
-		pack.seguimiento = strconv.Itoa(numSeguimiento)
+		ord.seguimiento = strconv.Itoa(numSeguimiento)
 		numSeguimiento = numSeguimiento + 1
 		if in.GetPrioritario() == 1 {
 			pack.tipo = "prioritario"
@@ -62,7 +78,8 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		pack.tipo = "retail"
 		retail = append(retail, pack)
 	}
-	allQueue = append(allQueue, pack)
+
+	allQueue = append(allQueue, ord)
 
 	//Se añade el pedido al archivo pedidos.csv
 	f, err := os.OpenFile("pedidos.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -71,12 +88,12 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString(t.Format("2006-01-02 15:04:05") + "," + in.GetId() + "," + in.GetProducto() + "," + fmt.Sprint(in.GetValor()) + "," + in.GetTienda() + "," + in.GetDestino() + "," + fmt.Sprint(in.GetPrioritario()) + "," + pack.seguimiento + "," + "En bodega" + "\n"); err != nil {
+	if _, err := f.WriteString(t.Format("2006-01-02 15:04:05") + "," + in.GetId() + "," + in.GetProducto() + "," + fmt.Sprint(in.GetValor()) + "," + in.GetTienda() + "," + in.GetDestino() + "," + fmt.Sprint(in.GetPrioritario()) + "," + ord.seguimiento + "," + "En bodega" + "\n"); err != nil {
 		log.Println(err)
 	}
 
 	log.Printf("Se envio Numero de seguimiento")
-	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ",Tu numero de seguimiento es:" + pack.seguimiento}, nil
+	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + " " + ",Tu numero de seguimiento es:" + ord.seguimiento}, nil
 }
 
 func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
@@ -122,7 +139,7 @@ func main() {
 	}
 	f, err := os.OpenFile("pedidos.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	defer f.Close()
-	if _, err := f.WriteString("timestamp,id,producto,valor,tienda,destino,prioritario,seguimiento\n"); err != nil {
+	if _, err := f.WriteString("timestamp,id,producto,valor,tienda,destino,prioritario,seguimiento,estado\n"); err != nil {
 		log.Println(err)
 	}
 
