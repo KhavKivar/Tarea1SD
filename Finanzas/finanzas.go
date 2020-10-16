@@ -50,27 +50,27 @@ func calcularBalance(nuevo final){
 	gastos = 0
 	
 	if(nuevo.Tipo == "retail"){
-		balance_prod= float64(nuevo.Valor) - float64((10 * (nuevo.Intentos - 1)))
+		balance_prod= float64(nuevo.Valor) - float64(10 *nuevo.Intentos)
 		ingresos = float64(nuevo.Valor)
-		gastos = float64(10 * (nuevo.Intentos - 1))
+		gastos = float64(10 * nuevo.Intentos)
 	}else if(nuevo.Tipo == "prioritario"){
 		if(nuevo.Estado == "Recibido"){
-			balance_prod = float64(nuevo.Valor - (10 * (nuevo.Intentos - 1)))
+			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
-			gastos = float64(10 * (nuevo.Intentos - 1))
+			gastos = float64(10 * nuevo.Intentos)
 		}else{
-			balance_prod = float64(nuevo.Valor - (10 * (nuevo.Intentos - 1)))
+			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
 			ingresos = (0.3 * float64(nuevo.Valor))
-			gastos = float64(10 * (nuevo.Intentos - 1))
+			gastos = float64(10 * nuevo.Intentos)
 		}
 	}else{
 		if(nuevo.Estado == "Recibido"){
-			balance_prod = float64(nuevo.Valor - (10 * (nuevo.Intentos - 1)))
+			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
-			gastos = float64(10 * (nuevo.Intentos - 1))
+			gastos = float64(10 * nuevo.Intentos)
 			}else{
-				balance_prod = float64(nuevo.Valor - (10 * (nuevo.Intentos - 1)))
-				gastos = float64(10 * (nuevo.Intentos - 1))
+				balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
+				gastos = float64(10 * nuevo.Intentos)
 			}
 	}
 }

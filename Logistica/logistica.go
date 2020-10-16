@@ -191,13 +191,14 @@ func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (
 		if allQueue[i].id == in.GetId() {
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
+			obj.intentos = in.GetIntentos()
 			allQueue[i] = obj
 
 			nuevo.Id = allQueue[i].id
 			nuevo.Seguimiento = allQueue[i].seguimiento
 			nuevo.Tipo = allQueue[i].tipo
 			nuevo.Valor = allQueue[i].valor
-			nuevo.Intentos = obj.intentos
+			nuevo.Intentos = allQueue[i].intentos
 			nuevo.Estado = allQueue[i].estado
 			EnviarAFinanzas(nuevo)
 		}
