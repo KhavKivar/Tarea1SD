@@ -8,9 +8,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	
-	"encoding/json"
-	"github.com/streadway/amqp"
 
 	//"fmt"
 	"strconv"
@@ -39,68 +36,6 @@ type paquete struct {
 	destino  string
 	intentos int32
 }
-
-type finanzas struct {
-	Id          string 'json: "id"'
-	Seguimiento string 'json: "seguimiento"'
-	Tipo        string 'json: "tipo"'
-	Valor       int32 'json: "valor"'
-	Intentos    int32 'json: "intentos"'
-	Estado      string 'json: "estado"'
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
-func makeJSON(finan finanzas) string{
-	byteArray, err := json.Marshal(finan)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	JSON := string(byteArray)
-
-	return JSON
-}
-
-func ActualizacionFinanzas(fin finanzas){
-	//pack := paquete{Id:"FF14", Seguimiento:"11113", Tipo:"prioritario", Valor:123, Intentos:1, Estado:"No Recibido"}   //ejemplos
-	//pack := paquete{Id:"FF12", Seguimiento:"0", Tipo:"retail", Valor:400, Intentos:1, Estado:"Recibido"}
-	
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	failOnError(err, "No se pudo conectar a RabbitMQ")
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	failOnError(err, "No se pudo abrir canal de comunicacion")
-	defer ch.Close()
-
-	q, err := ch.QueueDeclare(
-		"hello", // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
-	)
-	failOnError(err, "No se pudo declarar la cola de mensajes")
-
-	body, err := json.Marshal(pack)
-	err = ch.Publish(
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
-		})
-	log.Printf(" [x] Enviado a finanzas: %s", body)
-	failOnError(err, "No se pudo enviar mensaje")
-} 
 
 var allQueue []orden
 
@@ -175,8 +110,12 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 	return &pb.Estado{Estado: "La orden no existe"}, nil
 }
 
+func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (*pb.OrdenRecibida, error) {
+	log.Printf("Pedido id: %v intentos: %v Estado: %v\n ", in.GetId(), in.GetIntentos(), in.GetEstado())
+	return &pb.OrdenRecibida{Message: "Recibido"}, nil
+}
+
 func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.Paquete, error) {
-	log.Printf("Camion %v solicita pedido\n", in.Tipo)
 	var y string = strings.TrimSuffix(in.Tipo, "\n")
 	if y == "retails" {
 		//Ver si hay paquetes en retails o prioritario
@@ -184,14 +123,14 @@ func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.
 			var aux = retail[0]
 			//Dequeue
 			retail = retail[1:]
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v ", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 		if len(prioritario) > 0 {
 			var aux = prioritario[0]
 			//Dequeue
 			prioritario = prioritario[1:]
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 	}
@@ -201,14 +140,14 @@ func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.
 			var aux = prioritario[0]
 			//Dequeue
 			prioritario = prioritario[1:]
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 		if len(normal) > 0 {
 			var aux = normal[0]
 			//Dequeue
 			normal = normal[1:]
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v", aux.id, aux.origen, aux.destino)
+			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 	}

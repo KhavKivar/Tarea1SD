@@ -16,12 +16,21 @@ service logistica_cliente {
 
     // Servicios Logistica-Camion
     rpc SolicitudPaquetes (tipoCamion) returns (paquete){}
+    rpc ResultadoEntrega(paqueteRecibido) returns (orden_recibida){}
 
   }
   message tipoCamion{
     string tipo=1;
   }
 
+  message paqueteRecibido{
+    string id = 1;
+    string tipo = 2;
+    int32 valor = 3;
+    int32 intentos = 6;
+    string estado = 7;
+
+  }
   message paquete{
     string id = 1;
     string tipo = 2;
