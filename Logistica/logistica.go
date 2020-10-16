@@ -110,7 +110,32 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 	return &pb.Estado{Estado: "La orden no existe"}, nil
 }
 
+func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*pb.OrdenRecibida, error) {
+	i := 0
+	for i < len(allQueue) {
+		if allQueue[i].id == in.GetId() {
+			var obj = allQueue[i]
+			obj.estado = in.GetEstado()
+			allQueue[i] = obj
+			return &pb.OrdenRecibida{Message: "Campo actualizado"}, nil
+		}
+		i++
+	}
+	return &pb.OrdenRecibida{Message: "No se encontro la id"}, nil
+}
+
 func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (*pb.OrdenRecibida, error) {
+	//Actualizar Pedido
+	i := 0
+	for i < len(allQueue) {
+		if allQueue[i].id == in.GetId() {
+			var obj = allQueue[i]
+			obj.estado = in.GetEstado()
+			allQueue[i] = obj
+		}
+		i++
+	}
+
 	log.Printf("Pedido id: %v intentos: %v Estado: %v\n ", in.GetId(), in.GetIntentos(), in.GetEstado())
 	return &pb.OrdenRecibida{Message: "Recibido"}, nil
 }

@@ -23,6 +23,7 @@ type LogisticaClienteClient interface {
 	// Servicios Logistica-Camion
 	SolicitudPaquetes(ctx context.Context, in *TipoCamion, opts ...grpc.CallOption) (*Paquete, error)
 	ResultadoEntrega(ctx context.Context, in *PaqueteRecibido, opts ...grpc.CallOption) (*OrdenRecibida, error)
+	ActualizarEstado(ctx context.Context, in *EstadoPaquete, opts ...grpc.CallOption) (*OrdenRecibida, error)
 }
 
 type logisticaClienteClient struct {
@@ -69,6 +70,15 @@ func (c *logisticaClienteClient) ResultadoEntrega(ctx context.Context, in *Paque
 	return out, nil
 }
 
+func (c *logisticaClienteClient) ActualizarEstado(ctx context.Context, in *EstadoPaquete, opts ...grpc.CallOption) (*OrdenRecibida, error) {
+	out := new(OrdenRecibida)
+	err := c.cc.Invoke(ctx, "/paquete.logistica_cliente/ActualizarEstado", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LogisticaClienteServer is the server API for LogisticaCliente service.
 // All implementations must embed UnimplementedLogisticaClienteServer
 // for forward compatibility
@@ -79,6 +89,7 @@ type LogisticaClienteServer interface {
 	// Servicios Logistica-Camion
 	SolicitudPaquetes(context.Context, *TipoCamion) (*Paquete, error)
 	ResultadoEntrega(context.Context, *PaqueteRecibido) (*OrdenRecibida, error)
+	ActualizarEstado(context.Context, *EstadoPaquete) (*OrdenRecibida, error)
 	mustEmbedUnimplementedLogisticaClienteServer()
 }
 
@@ -97,6 +108,9 @@ func (UnimplementedLogisticaClienteServer) SolicitudPaquetes(context.Context, *T
 }
 func (UnimplementedLogisticaClienteServer) ResultadoEntrega(context.Context, *PaqueteRecibido) (*OrdenRecibida, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResultadoEntrega not implemented")
+}
+func (UnimplementedLogisticaClienteServer) ActualizarEstado(context.Context, *EstadoPaquete) (*OrdenRecibida, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActualizarEstado not implemented")
 }
 func (UnimplementedLogisticaClienteServer) mustEmbedUnimplementedLogisticaClienteServer() {}
 
@@ -183,6 +197,24 @@ func _LogisticaCliente_ResultadoEntrega_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LogisticaCliente_ActualizarEstado_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstadoPaquete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LogisticaClienteServer).ActualizarEstado(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/paquete.logistica_cliente/ActualizarEstado",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LogisticaClienteServer).ActualizarEstado(ctx, req.(*EstadoPaquete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "paquete.logistica_cliente",
 	HandlerType: (*LogisticaClienteServer)(nil),
@@ -202,6 +234,10 @@ var _LogisticaCliente_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResultadoEntrega",
 			Handler:    _LogisticaCliente_ResultadoEntrega_Handler,
+		},
+		{
+			MethodName: "ActualizarEstado",
+			Handler:    _LogisticaCliente_ActualizarEstado_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
