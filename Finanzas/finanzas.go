@@ -134,9 +134,9 @@ func main(){
 			ordenes = append(ordenes, actualizacion)
 			balance_total = balance_total + ingresos - gastos
 			log.Printf("-------------------------------------------------------------------------------------")
-			log.Printf("El estado de la entrega es %s, es de tipo %s, su valor es de %d y la cantidad de reintentos es de %d", actualizacion.Estado, actualizacion.Tipo, actualizacion.Valor, actualizacion.Intentos)
+			log.Printf("El estado de la entrega es %s, es de tipo %s, su valor es de %d y los reintentos fueron %d", actualizacion.Estado, actualizacion.Tipo, actualizacion.Valor, actualizacion.Intentos)
 			log.Printf("El balance actual es:")
-			log.Printf("      Ingreso del paquete: %f dignipesos		Gastos asociados a entrega: %f dignipesos", ingresos, gastos)
+			log.Printf("   Ingreso del paquete: %f dignipesos || Gastos asociados a la entrega: %f dignipesos", ingresos, gastos)
 			log.Printf("			Balance Total: %f dignipesos", balance_total)
 			log.Printf("-------------------------------------------------------------------------------------")
 			log.Printf(" [*] Esperando actualizaciones de logistica. Presiona CTRL + C para salir.")
