@@ -46,6 +46,8 @@ func jsonToStruct(a []byte) final{
 func calcularBalance(nuevo final){
 
 	balance_prod = 0
+	ingresos = 0
+	gastos = 0
 	
 	if(nuevo.Tipo == "retail"){
 		balance_prod= float64(nuevo.Valor) - float64((10 * (nuevo.Intentos - 1)))
@@ -88,8 +90,6 @@ func actualizarCSV(nuevo final){
 func main(){
 
 	balance_total = 0
-	ingresos = 0
-	gastos = 0
 
 	log.Printf("Bienvenido al sistema de finanzas de PrestigioExpress")
 	
@@ -134,8 +134,9 @@ func main(){
 			ordenes = append(ordenes, actualizacion)
 			balance_total = balance_total + ingresos - gastos
 			log.Printf("-------------------------------------------------------------------------------------")
+			log.Printf("El estado de la entrega es %s, es de tipo %s, su valor es de %d y la cantidad de reintentos es de %d", actualizacion.Estado, actualizacion.Tipo, actualizacion.Valor, actualizacion.Intentos)
 			log.Printf("El balance actual es:")
-			log.Printf("      Ingresos: %f dignipesos		Gastos: %f dignipesos", ingresos, gastos)
+			log.Printf("      Ingreso del paquete: %f dignipesos		Gastos asociados a entrega: %f dignipesos", ingresos, gastos)
 			log.Printf("			Balance Total: %f dignipesos", balance_total)
 			log.Printf("-------------------------------------------------------------------------------------")
 			log.Printf(" [*] Esperando actualizaciones de logistica. Presiona CTRL + C para salir.")

@@ -8,13 +8,17 @@ import (
 	"os"
 	"strings"
 	"time"
-
+	
+	"github.com/streadway/amqp"
+	"encoding/json"
+	
 	//"fmt"
 	"strconv"
 
 	pb "google.golang.org/TAREA1SD/Logistica/paquete"
 	"google.golang.org/grpc"
 )
+
 
 type server struct {
 	pb.UnimplementedLogisticaClienteServer
@@ -26,6 +30,8 @@ type orden struct {
 	idCamion    string
 	seguimiento string
 	intentos    int32
+	tipo 		string
+	valor  		int32
 }
 
 type paquete struct {
@@ -35,6 +41,54 @@ type paquete struct {
 	origen   string
 	destino  string
 	intentos int32
+}
+
+type finanzas struct {
+	Id          string `json: "id"`
+	Seguimiento string `json: "seguimiento"`
+	Tipo        string `json: "tipo"`
+	Valor       int32 `json: "valor"`
+	Intentos    int32 `json: "intentos"`
+	Estado      string `json: "estado"`
+}
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
+func EnviarAFinanzas(pack finanzas){
+
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	failOnError(err, "Falla en conectar a RabbitMQ")
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	failOnError(err, "Falla en abrir un canal")
+	defer ch.Close()
+
+	q, err := ch.QueueDeclare(
+		"hello", // name
+		false,   // durable
+		false,   // delete when unused
+		false,   // exclusive
+		false,   // no-wait
+		nil,     // arguments
+	)
+	failOnError(err, "Falla en establecer una queue")
+
+	body, err := json.Marshal(pack)
+	err = ch.Publish(
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
+		})
+	failOnError(err, "Falla en enviar el mensaje")
 }
 
 var allQueue []orden
@@ -56,6 +110,7 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	ord.idCamion = ""
 	ord.seguimiento = "0"
 	ord.intentos = 0
+	ord.valor = in.GetValor()
 
 	//Se crea el paquete, y se añade a la cola correspondiente
 	pack.id = in.GetId()
@@ -69,13 +124,16 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		numSeguimiento = numSeguimiento + 1
 		if in.GetPrioritario() == 1 {
 			pack.tipo = "prioritario"
+			ord.tipo = "prioritario"
 			prioritario = append(prioritario, pack)
 		} else {
 			pack.tipo = "normal"
+			ord.tipo = "normal"
 			normal = append(normal, pack)
 		}
 	} else {
 		pack.tipo = "retail"
+		ord.tipo = "retail"
 		retail = append(retail, pack)
 	}
 
@@ -117,6 +175,7 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
 			allQueue[i] = obj
+
 			return &pb.OrdenRecibida{Message: "Campo actualizado"}, nil
 		}
 		i++
@@ -127,14 +186,23 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (*pb.OrdenRecibida, error) {
 	//Actualizar Pedido
 	i := 0
+	var nuevo finanzas
 	for i < len(allQueue) {
 		if allQueue[i].id == in.GetId() {
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
 			allQueue[i] = obj
+
+			nuevo.Id = allQueue[i].id
+			nuevo.Seguimiento = allQueue[i].seguimiento
+			nuevo.Tipo = allQueue[i].tipo
+			nuevo.Valor = allQueue[i].valor
+			nuevo.Intentos = obj.intentos
+			nuevo.Estado = allQueue[i].estado
+			EnviarAFinanzas(nuevo)
 		}
 		i++
-	}
+	}	
 
 	log.Printf("Pedido id: %v intentos: %v Estado: %v\n ", in.GetId(), in.GetIntentos(), in.GetEstado())
 	return &pb.OrdenRecibida{Message: "Recibido"}, nil
