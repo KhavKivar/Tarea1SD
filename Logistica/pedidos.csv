@@ -1,120 +1,141 @@
 timestamp,id,producto,valor,tienda,destino,prioritario,seguimiento,estado
-2020-10-16 03:21:47,BE127,Secador de pelo,15,pyme,casa-K,1,11111,En bodega
-2020-10-16 03:21:47,BE666,Jabón para la ducha,8,pyme,casa-A,1,11112,En bodega
-2020-10-16 03:21:47,BE855,Acondicionador,10,pyme,casa-A,0,11113,En bodega
-2020-10-16 03:21:47,BE654,Shampoo,10,pyme,casa-D,0,11114,En bodega
-2020-10-16 03:21:47,BE785,Crema para peinar,8,pyme,casa-E,1,11115,En bodega
-2020-10-16 03:21:47,PF654,Placa madre,50,pyme,casa-B,1,11116,En bodega
-2020-10-16 03:21:47,PF125,Procesador R,75,pyme,casa-N,0,11117,En bodega
-2020-10-16 03:21:47,PF111,Ventilador,10,pyme,casa-N,1,11118,En bodega
-2020-10-16 03:21:47,PF245,Gabinete,20,pyme,casa-S,0,11119,En bodega
-2020-10-16 03:21:47,PF225,Fuente de poder,25,pyme,casa-P,1,11120,En bodega
-2020-10-16 03:21:47,PF354,Memoria RAM,22,pyme,casa-R,0,11121,En bodega
-2020-10-16 03:21:47,PF542,Procesador I,90,pyme,casa-N,0,11122,En bodega
-2020-10-16 03:21:47,PF452,Tarjeta de video,115,pyme,casa-I,1,11123,En bodega
-2020-10-16 03:21:47,OF352,Set de plumones,9,pyme,casa-C,1,11124,En bodega
-2020-10-16 03:21:47,OF754,Cuadernos,5,pyme,casa-C,0,11125,En bodega
-2020-10-16 03:21:47,OF554,Lapices,4,pyme,casa-I,0,11126,En bodega
-2020-10-16 03:21:47,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11127,En bodega
-2020-10-16 03:21:47,DE654,Pelota de futbol,11,pyme,casa-V,1,11128,En bodega
-2020-10-16 03:21:47,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11129,En bodega
-2020-10-16 03:21:47,DE245,Palo de golf,18,pyme,casa-Y,1,11130,En bodega
-2020-10-16 03:21:47,CC122,Polera,9,pyme,casa-F,0,11131,En bodega
-2020-10-16 03:21:47,CC147,Pantalón,11,pyme,casa-C,1,11132,En bodega
-2020-10-16 03:21:47,CC124,Abrigo,17,pyme,casa-U,0,11133,En bodega
-2020-10-16 03:21:47,CC175,Bufanda,6,pyme,casa-A,1,11134,En bodega
-2020-10-16 03:21:47,CC121,Chaqueta,16,pyme,casa-X,0,11135,En bodega
-2020-10-16 03:21:47,CC147,Sueter,14,pyme,casa-C,1,11136,En bodega
-2020-10-16 03:21:47,CC121,Pantalón,10,pyme,casa-A,0,11137,En bodega
-2020-10-16 03:21:47,CC454,Polera,7,pyme,casa-Q,0,11138,En bodega
-2020-10-16 03:21:47,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11139,En bodega
-2020-10-16 03:21:47,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11140,En bodega
-2020-10-16 03:21:47,GG568,Almendras: 500 g,5,pyme,casa-L,0,11141,En bodega
-2020-10-16 03:21:47,GG301,Chia: 500 g,6,pyme,casa-D,0,11142,En bodega
-2020-10-16 03:21:47,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11143,En bodega
-2020-10-16 03:21:49,SA1554KF,Polera,10,tienda-A,casa-A,0,0,En bodega
-2020-10-16 03:21:49,SA1684AH,Pantalón,12,tienda-B,casa-B,0,0,En bodega
-2020-10-16 03:21:49,SA5698PO,Televisor,110,tienda-C,casa-C,0,0,En bodega
-2020-10-16 03:21:49,SA5897AS,Consola de Videojuegos,95,tienda-A,casa-D,0,0,En bodega
-2020-10-16 03:21:49,SA1589GD,Lavadora,100,tienda-B,casa-Q,0,0,En bodega
-2020-10-16 03:21:49,SA8859SS,Polerón,15,tienda-C,casa-A,0,0,En bodega
-2020-10-16 03:21:49,SA5713AS,Parca,20,tienda-B,casa-C,0,0,En bodega
-2020-10-16 03:21:49,SA2589TR,Pelota,5,tienda-C,casa-P,0,0,En bodega
-2020-10-16 03:21:49,SA1597EF,Raqueta,20,tienda-A,casa-F,0,0,En bodega
-2020-10-16 03:21:49,SA3574FG,Refrigerador,120,tienda-B,casa-U,0,0,En bodega
-2020-10-16 03:21:49,SA3698HJ,Tostador,25,tienda-C,casa-A,0,0,En bodega
-2020-10-16 03:21:49,SA2563AS,Perfume,15,tienda-A,casa-N,0,0,En bodega
-2020-10-16 03:21:49,SA1937JH,Tobillera,6,tienda-C,casa-N,0,0,En bodega
-2020-10-16 03:21:49,SA5648AA,Notebook,80,tienda-B,casa-A,0,0,En bodega
-2020-10-16 03:21:49,SA6947GH,Set de ollas,50,tienda-C,casa-C,0,0,En bodega
-2020-10-16 03:21:49,SA5588HJ,Parlante,25,tienda-C,casa-E,0,0,En bodega
-2020-10-16 03:21:49,SA6644DS,Lampara,30,tienda-A,casa-A,0,0,En bodega
-2020-10-16 03:21:49,SA5974AA,Sillón,105,tienda-C,casa-C,0,0,En bodega
-2020-10-16 03:21:49,SA2596NH,Mesa,90,tienda-A,casa-S,0,0,En bodega
-2020-10-16 03:21:49,SA7748JK,Cama,115,tienda-B,casa-A,0,0,En bodega
-2020-10-16 03:24:07,BE127,Secador de pelo,15,pyme,casa-K,1,11144,En bodega
-2020-10-16 03:24:07,BE666,Jabón para la ducha,8,pyme,casa-A,1,11145,En bodega
-2020-10-16 03:24:07,BE855,Acondicionador,10,pyme,casa-A,0,11146,En bodega
-2020-10-16 03:24:07,BE654,Shampoo,10,pyme,casa-D,0,11147,En bodega
-2020-10-16 03:24:07,BE785,Crema para peinar,8,pyme,casa-E,1,11148,En bodega
-2020-10-16 03:24:07,PF654,Placa madre,50,pyme,casa-B,1,11149,En bodega
-2020-10-16 03:24:07,PF125,Procesador R,75,pyme,casa-N,0,11150,En bodega
-2020-10-16 03:24:07,PF111,Ventilador,10,pyme,casa-N,1,11151,En bodega
-2020-10-16 03:24:07,PF245,Gabinete,20,pyme,casa-S,0,11152,En bodega
-2020-10-16 03:24:07,PF225,Fuente de poder,25,pyme,casa-P,1,11153,En bodega
-2020-10-16 03:24:07,PF354,Memoria RAM,22,pyme,casa-R,0,11154,En bodega
-2020-10-16 03:24:07,PF542,Procesador I,90,pyme,casa-N,0,11155,En bodega
-2020-10-16 03:24:07,PF452,Tarjeta de video,115,pyme,casa-I,1,11156,En bodega
-2020-10-16 03:24:07,OF352,Set de plumones,9,pyme,casa-C,1,11157,En bodega
-2020-10-16 03:24:07,OF754,Cuadernos,5,pyme,casa-C,0,11158,En bodega
-2020-10-16 03:24:07,OF554,Lapices,4,pyme,casa-I,0,11159,En bodega
-2020-10-16 03:24:07,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11160,En bodega
-2020-10-16 03:24:07,DE654,Pelota de futbol,11,pyme,casa-V,1,11161,En bodega
-2020-10-16 03:24:07,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11162,En bodega
-2020-10-16 03:24:07,DE245,Palo de golf,18,pyme,casa-Y,1,11163,En bodega
-2020-10-16 03:24:07,CC122,Polera,9,pyme,casa-F,0,11164,En bodega
-2020-10-16 03:24:07,CC147,Pantalón,11,pyme,casa-C,1,11165,En bodega
-2020-10-16 03:24:07,CC124,Abrigo,17,pyme,casa-U,0,11166,En bodega
-2020-10-16 03:24:07,CC175,Bufanda,6,pyme,casa-A,1,11167,En bodega
-2020-10-16 03:24:07,CC121,Chaqueta,16,pyme,casa-X,0,11168,En bodega
-2020-10-16 03:24:07,CC147,Sueter,14,pyme,casa-C,1,11169,En bodega
-2020-10-16 03:24:07,CC121,Pantalón,10,pyme,casa-A,0,11170,En bodega
-2020-10-16 03:24:07,CC454,Polera,7,pyme,casa-Q,0,11171,En bodega
-2020-10-16 03:24:07,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11172,En bodega
-2020-10-16 03:24:07,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11173,En bodega
-2020-10-16 03:24:07,GG568,Almendras: 500 g,5,pyme,casa-L,0,11174,En bodega
-2020-10-16 03:24:07,GG301,Chia: 500 g,6,pyme,casa-D,0,11175,En bodega
-2020-10-16 03:24:07,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11176,En bodega
-2020-10-16 03:27:41,BE127,Secador de pelo,15,pyme,casa-K,1,11177,En bodega
-2020-10-16 03:27:41,BE666,Jabón para la ducha,8,pyme,casa-A,1,11178,En bodega
-2020-10-16 03:27:41,BE855,Acondicionador,10,pyme,casa-A,0,11179,En bodega
-2020-10-16 03:27:41,BE654,Shampoo,10,pyme,casa-D,0,11180,En bodega
-2020-10-16 03:27:41,BE785,Crema para peinar,8,pyme,casa-E,1,11181,En bodega
-2020-10-16 03:27:41,PF654,Placa madre,50,pyme,casa-B,1,11182,En bodega
-2020-10-16 03:27:41,PF125,Procesador R,75,pyme,casa-N,0,11183,En bodega
-2020-10-16 03:27:41,PF111,Ventilador,10,pyme,casa-N,1,11184,En bodega
-2020-10-16 03:27:41,PF245,Gabinete,20,pyme,casa-S,0,11185,En bodega
-2020-10-16 03:27:41,PF225,Fuente de poder,25,pyme,casa-P,1,11186,En bodega
-2020-10-16 03:27:41,PF354,Memoria RAM,22,pyme,casa-R,0,11187,En bodega
-2020-10-16 03:27:41,PF542,Procesador I,90,pyme,casa-N,0,11188,En bodega
-2020-10-16 03:27:41,PF452,Tarjeta de video,115,pyme,casa-I,1,11189,En bodega
-2020-10-16 03:27:41,OF352,Set de plumones,9,pyme,casa-C,1,11190,En bodega
-2020-10-16 03:27:41,OF754,Cuadernos,5,pyme,casa-C,0,11191,En bodega
-2020-10-16 03:27:41,OF554,Lapices,4,pyme,casa-I,0,11192,En bodega
-2020-10-16 03:27:41,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11193,En bodega
-2020-10-16 03:27:41,DE654,Pelota de futbol,11,pyme,casa-V,1,11194,En bodega
-2020-10-16 03:27:41,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11195,En bodega
-2020-10-16 03:27:41,DE245,Palo de golf,18,pyme,casa-Y,1,11196,En bodega
-2020-10-16 03:27:41,CC122,Polera,9,pyme,casa-F,0,11197,En bodega
-2020-10-16 03:27:41,CC147,Pantalón,11,pyme,casa-C,1,11198,En bodega
-2020-10-16 03:27:41,CC124,Abrigo,17,pyme,casa-U,0,11199,En bodega
-2020-10-16 03:27:41,CC175,Bufanda,6,pyme,casa-A,1,11200,En bodega
-2020-10-16 03:27:41,CC121,Chaqueta,16,pyme,casa-X,0,11201,En bodega
-2020-10-16 03:27:41,CC147,Sueter,14,pyme,casa-C,1,11202,En bodega
-2020-10-16 03:27:41,CC121,Pantalón,10,pyme,casa-A,0,11203,En bodega
-2020-10-16 03:27:41,CC454,Polera,7,pyme,casa-Q,0,11204,En bodega
-2020-10-16 03:27:41,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11205,En bodega
-2020-10-16 03:27:41,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11206,En bodega
-2020-10-16 03:27:41,GG568,Almendras: 500 g,5,pyme,casa-L,0,11207,En bodega
-2020-10-16 03:27:41,GG301,Chia: 500 g,6,pyme,casa-D,0,11208,En bodega
-2020-10-16 03:27:41,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11209,En bodega
+2020-10-16 18:17:42,BE127,Secador de pelo,15,pyme,casa-K,1,11111,En bodega
+2020-10-16 18:18:16,BE127,Secador de pelo,15,pyme,casa-K,1,11112,En bodega
+2020-10-16 18:18:18,BE666,Jabón para la ducha,8,pyme,casa-A,1,11113,En bodega
+2020-10-16 18:18:20,BE855,Acondicionador,10,pyme,casa-A,0,11114,En bodega
+2020-10-16 18:18:22,BE654,Shampoo,10,pyme,casa-D,0,11115,En bodega
+2020-10-16 18:18:24,BE785,Crema para peinar,8,pyme,casa-E,1,11116,En bodega
+2020-10-16 18:18:26,PF654,Placa madre,50,pyme,casa-B,1,11117,En bodega
+2020-10-16 18:18:28,PF125,Procesador R,75,pyme,casa-N,0,11118,En bodega
+2020-10-16 18:18:30,PF111,Ventilador,10,pyme,casa-N,1,11119,En bodega
+2020-10-16 18:18:32,PF245,Gabinete,20,pyme,casa-S,0,11120,En bodega
+2020-10-16 18:18:34,PF225,Fuente de poder,25,pyme,casa-P,1,11121,En bodega
+2020-10-16 18:18:36,PF354,Memoria RAM,22,pyme,casa-R,0,11122,En bodega
+2020-10-16 18:18:38,PF542,Procesador I,90,pyme,casa-N,0,11123,En bodega
+2020-10-16 18:18:40,PF452,Tarjeta de video,115,pyme,casa-I,1,11124,En bodega
+2020-10-16 18:18:42,OF352,Set de plumones,9,pyme,casa-C,1,11125,En bodega
+2020-10-16 18:18:44,OF754,Cuadernos,5,pyme,casa-C,0,11126,En bodega
+2020-10-16 18:18:46,OF554,Lapices,4,pyme,casa-I,0,11127,En bodega
+2020-10-16 18:18:48,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11128,En bodega
+2020-10-16 18:18:50,DE654,Pelota de futbol,11,pyme,casa-V,1,11129,En bodega
+2020-10-16 18:18:52,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11130,En bodega
+2020-10-16 18:18:54,DE245,Palo de golf,18,pyme,casa-Y,1,11131,En bodega
+2020-10-16 18:18:56,CC122,Polera,9,pyme,casa-F,0,11132,En bodega
+2020-10-16 18:18:58,CC147,Pantalón,11,pyme,casa-C,1,11133,En bodega
+2020-10-16 18:19:00,CC124,Abrigo,17,pyme,casa-U,0,11134,En bodega
+2020-10-16 18:19:02,CC175,Bufanda,6,pyme,casa-A,1,11135,En bodega
+2020-10-16 18:19:04,CC121,Chaqueta,16,pyme,casa-X,0,11136,En bodega
+2020-10-16 18:19:06,CC147,Sueter,14,pyme,casa-C,1,11137,En bodega
+2020-10-16 18:19:08,CC121,Pantalón,10,pyme,casa-A,0,11138,En bodega
+2020-10-16 18:19:10,CC454,Polera,7,pyme,casa-Q,0,11139,En bodega
+2020-10-16 18:19:12,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11140,En bodega
+2020-10-16 18:19:14,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11141,En bodega
+2020-10-16 18:19:16,GG568,Almendras: 500 g,5,pyme,casa-L,0,11142,En bodega
+2020-10-16 18:19:18,GG301,Chia: 500 g,6,pyme,casa-D,0,11143,En bodega
+2020-10-16 18:19:20,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11144,En bodega
+2020-10-16 18:19:36,BE127,Secador de pelo,15,pyme,casa-K,1,11145,En bodega
+2020-10-16 18:19:36,BE666,Jabón para la ducha,8,pyme,casa-A,1,11146,En bodega
+2020-10-16 18:19:36,BE855,Acondicionador,10,pyme,casa-A,0,11147,En bodega
+2020-10-16 18:19:36,BE654,Shampoo,10,pyme,casa-D,0,11148,En bodega
+2020-10-16 18:19:36,BE785,Crema para peinar,8,pyme,casa-E,1,11149,En bodega
+2020-10-16 18:19:36,PF654,Placa madre,50,pyme,casa-B,1,11150,En bodega
+2020-10-16 18:19:36,PF125,Procesador R,75,pyme,casa-N,0,11151,En bodega
+2020-10-16 18:19:36,PF111,Ventilador,10,pyme,casa-N,1,11152,En bodega
+2020-10-16 18:19:36,PF245,Gabinete,20,pyme,casa-S,0,11153,En bodega
+2020-10-16 18:19:36,PF225,Fuente de poder,25,pyme,casa-P,1,11154,En bodega
+2020-10-16 18:19:36,PF354,Memoria RAM,22,pyme,casa-R,0,11155,En bodega
+2020-10-16 18:19:36,PF542,Procesador I,90,pyme,casa-N,0,11156,En bodega
+2020-10-16 18:19:36,PF452,Tarjeta de video,115,pyme,casa-I,1,11157,En bodega
+2020-10-16 18:19:36,OF352,Set de plumones,9,pyme,casa-C,1,11158,En bodega
+2020-10-16 18:19:36,OF754,Cuadernos,5,pyme,casa-C,0,11159,En bodega
+2020-10-16 18:19:36,OF554,Lapices,4,pyme,casa-I,0,11160,En bodega
+2020-10-16 18:19:36,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11161,En bodega
+2020-10-16 18:19:36,DE654,Pelota de futbol,11,pyme,casa-V,1,11162,En bodega
+2020-10-16 18:19:36,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11163,En bodega
+2020-10-16 18:19:36,DE245,Palo de golf,18,pyme,casa-Y,1,11164,En bodega
+2020-10-16 18:19:36,CC122,Polera,9,pyme,casa-F,0,11165,En bodega
+2020-10-16 18:19:36,CC147,Pantalón,11,pyme,casa-C,1,11166,En bodega
+2020-10-16 18:19:36,CC124,Abrigo,17,pyme,casa-U,0,11167,En bodega
+2020-10-16 18:19:36,CC175,Bufanda,6,pyme,casa-A,1,11168,En bodega
+2020-10-16 18:19:36,CC121,Chaqueta,16,pyme,casa-X,0,11169,En bodega
+2020-10-16 18:19:36,CC147,Sueter,14,pyme,casa-C,1,11170,En bodega
+2020-10-16 18:19:36,CC121,Pantalón,10,pyme,casa-A,0,11171,En bodega
+2020-10-16 18:19:36,CC454,Polera,7,pyme,casa-Q,0,11172,En bodega
+2020-10-16 18:19:36,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11173,En bodega
+2020-10-16 18:19:36,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11174,En bodega
+2020-10-16 18:19:36,GG568,Almendras: 500 g,5,pyme,casa-L,0,11175,En bodega
+2020-10-16 18:19:36,GG301,Chia: 500 g,6,pyme,casa-D,0,11176,En bodega
+2020-10-16 18:19:36,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11177,En bodega
+2020-10-16 18:19:38,SA1554KF,Polera,10,tienda-A,casa-A,0,0,En bodega
+2020-10-16 18:19:38,SA1684AH,Pantalón,12,tienda-B,casa-B,0,0,En bodega
+2020-10-16 18:19:38,SA5698PO,Televisor,110,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:19:38,SA5897AS,Consola de Videojuegos,95,tienda-A,casa-D,0,0,En bodega
+2020-10-16 18:19:38,SA1589GD,Lavadora,100,tienda-B,casa-Q,0,0,En bodega
+2020-10-16 18:19:38,SA8859SS,Polerón,15,tienda-C,casa-A,0,0,En bodega
+2020-10-16 18:19:38,SA5713AS,Parca,20,tienda-B,casa-C,0,0,En bodega
+2020-10-16 18:19:38,SA2589TR,Pelota,5,tienda-C,casa-P,0,0,En bodega
+2020-10-16 18:19:38,SA1597EF,Raqueta,20,tienda-A,casa-F,0,0,En bodega
+2020-10-16 18:19:38,SA3574FG,Refrigerador,120,tienda-B,casa-U,0,0,En bodega
+2020-10-16 18:19:38,SA3698HJ,Tostador,25,tienda-C,casa-A,0,0,En bodega
+2020-10-16 18:19:38,SA2563AS,Perfume,15,tienda-A,casa-N,0,0,En bodega
+2020-10-16 18:19:38,SA1937JH,Tobillera,6,tienda-C,casa-N,0,0,En bodega
+2020-10-16 18:19:38,SA5648AA,Notebook,80,tienda-B,casa-A,0,0,En bodega
+2020-10-16 18:19:38,SA6947GH,Set de ollas,50,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:19:38,SA5588HJ,Parlante,25,tienda-C,casa-E,0,0,En bodega
+2020-10-16 18:19:38,SA6644DS,Lampara,30,tienda-A,casa-A,0,0,En bodega
+2020-10-16 18:19:38,SA5974AA,Sillón,105,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:19:38,SA2596NH,Mesa,90,tienda-A,casa-S,0,0,En bodega
+2020-10-16 18:19:38,SA7748JK,Cama,115,tienda-B,casa-A,0,0,En bodega
+2020-10-16 18:20:25,BE127,Secador de pelo,15,pyme,casa-K,1,11178,En bodega
+2020-10-16 18:20:26,BE666,Jabón para la ducha,8,pyme,casa-A,1,11179,En bodega
+2020-10-16 18:20:27,BE855,Acondicionador,10,pyme,casa-A,0,11180,En bodega
+2020-10-16 18:20:28,BE654,Shampoo,10,pyme,casa-D,0,11181,En bodega
+2020-10-16 18:20:29,BE785,Crema para peinar,8,pyme,casa-E,1,11182,En bodega
+2020-10-16 18:20:30,PF654,Placa madre,50,pyme,casa-B,1,11183,En bodega
+2020-10-16 18:20:31,PF125,Procesador R,75,pyme,casa-N,0,11184,En bodega
+2020-10-16 18:20:32,PF111,Ventilador,10,pyme,casa-N,1,11185,En bodega
+2020-10-16 18:20:33,PF245,Gabinete,20,pyme,casa-S,0,11186,En bodega
+2020-10-16 18:20:34,PF225,Fuente de poder,25,pyme,casa-P,1,11187,En bodega
+2020-10-16 18:20:35,PF354,Memoria RAM,22,pyme,casa-R,0,11188,En bodega
+2020-10-16 18:20:36,PF542,Procesador I,90,pyme,casa-N,0,11189,En bodega
+2020-10-16 18:20:37,PF452,Tarjeta de video,115,pyme,casa-I,1,11190,En bodega
+2020-10-16 18:20:38,OF352,Set de plumones,9,pyme,casa-C,1,11191,En bodega
+2020-10-16 18:20:39,OF754,Cuadernos,5,pyme,casa-C,0,11192,En bodega
+2020-10-16 18:20:40,OF554,Lapices,4,pyme,casa-I,0,11193,En bodega
+2020-10-16 18:20:41,DE123,Zapatillas de futbol,16,pyme,casa-E,0,11194,En bodega
+2020-10-16 18:20:42,DE654,Pelota de futbol,11,pyme,casa-V,1,11195,En bodega
+2020-10-16 18:20:43,DE786,Raqueta de tenis,15,pyme,casa-Z,1,11196,En bodega
+2020-10-16 18:20:44,DE245,Palo de golf,18,pyme,casa-Y,1,11197,En bodega
+2020-10-16 18:20:45,CC122,Polera,9,pyme,casa-F,0,11198,En bodega
+2020-10-16 18:20:46,CC147,Pantalón,11,pyme,casa-C,1,11199,En bodega
+2020-10-16 18:20:47,CC124,Abrigo,17,pyme,casa-U,0,11200,En bodega
+2020-10-16 18:20:48,CC175,Bufanda,6,pyme,casa-A,1,11201,En bodega
+2020-10-16 18:20:49,CC121,Chaqueta,16,pyme,casa-X,0,11202,En bodega
+2020-10-16 18:20:50,CC147,Sueter,14,pyme,casa-C,1,11203,En bodega
+2020-10-16 18:20:51,CC121,Pantalón,10,pyme,casa-A,0,11204,En bodega
+2020-10-16 18:20:52,CC454,Polera,7,pyme,casa-Q,0,11205,En bodega
+2020-10-16 18:20:53,GG257,Pistachos: 200 g,4,pyme,casa-B,0,11206,En bodega
+2020-10-16 18:20:54,GG124,Mani: 1 Kg,5,pyme,casa-A,0,11207,En bodega
+2020-10-16 18:20:55,GG568,Almendras: 500 g,5,pyme,casa-L,0,11208,En bodega
+2020-10-16 18:20:56,GG301,Chia: 500 g,6,pyme,casa-D,0,11209,En bodega
+2020-10-16 18:20:57,GG458,Arroz: 1 Kg,3,pyme,casa-C,1,11210,En bodega
+2020-10-16 18:22:08,SA1554KF,Polera,10,tienda-A,casa-A,0,0,En bodega
+2020-10-16 18:22:08,SA1684AH,Pantalón,12,tienda-B,casa-B,0,0,En bodega
+2020-10-16 18:22:08,SA5698PO,Televisor,110,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:22:08,SA5897AS,Consola de Videojuegos,95,tienda-A,casa-D,0,0,En bodega
+2020-10-16 18:22:08,SA1589GD,Lavadora,100,tienda-B,casa-Q,0,0,En bodega
+2020-10-16 18:22:08,SA8859SS,Polerón,15,tienda-C,casa-A,0,0,En bodega
+2020-10-16 18:22:08,SA5713AS,Parca,20,tienda-B,casa-C,0,0,En bodega
+2020-10-16 18:22:08,SA2589TR,Pelota,5,tienda-C,casa-P,0,0,En bodega
+2020-10-16 18:22:08,SA1597EF,Raqueta,20,tienda-A,casa-F,0,0,En bodega
+2020-10-16 18:22:08,SA3574FG,Refrigerador,120,tienda-B,casa-U,0,0,En bodega
+2020-10-16 18:22:08,SA3698HJ,Tostador,25,tienda-C,casa-A,0,0,En bodega
+2020-10-16 18:22:08,SA2563AS,Perfume,15,tienda-A,casa-N,0,0,En bodega
+2020-10-16 18:22:08,SA1937JH,Tobillera,6,tienda-C,casa-N,0,0,En bodega
+2020-10-16 18:22:08,SA5648AA,Notebook,80,tienda-B,casa-A,0,0,En bodega
+2020-10-16 18:22:08,SA6947GH,Set de ollas,50,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:22:08,SA5588HJ,Parlante,25,tienda-C,casa-E,0,0,En bodega
+2020-10-16 18:22:08,SA6644DS,Lampara,30,tienda-A,casa-A,0,0,En bodega
+2020-10-16 18:22:08,SA5974AA,Sillón,105,tienda-C,casa-C,0,0,En bodega
+2020-10-16 18:22:08,SA2596NH,Mesa,90,tienda-A,casa-S,0,0,En bodega
+2020-10-16 18:22:08,SA7748JK,Cama,115,tienda-B,casa-A,0,0,En bodega

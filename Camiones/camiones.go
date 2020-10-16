@@ -128,7 +128,6 @@ func updateValue(id string, est string, fecha string, intentos int32) {
 		i++
 	}
 }
-
 func sendEstado(p1 paquete) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -142,13 +141,16 @@ func entregarPyme(p1 paquete) {
 	if maxInt == 0 {
 		maxInt++
 	}
+	if maxInt > 2 {
+		maxInt = 2
+	}
 	p1.estado = "En camino"
 	sendEstado(p1)
 	var intentos = clienteRecibe(int(maxInt))
 	t := time.Now()
 	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
 	p1.intentos = int32(intentos)
-	log.Printf("Paquete Entregado id: %v por camion: %v  Fecha Entrega:%v \n", p1.id, p1.tipoCamion, p1.fechaEntrega)
+	log.Printf("Paquete Entregado id: %v por camion: %v\n Fecha Entrega:%v", p1.id, p1.tipoCamion, p1.fechaEntrega)
 	if intentos == int(maxInt) {
 		//El pedido no pudo ser entregado
 		p1.estado = "No Recibido"
@@ -177,7 +179,6 @@ func entregarRetails(p1 paquete) {
 	t := time.Now()
 	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
 	p1.intentos = int32(intentos)
-
 	log.Printf("Paquete Entregado id: %v por camion: %v\n", p1.id, p1.tipoCamion)
 	if intentos == 3 {
 		//El pedido no pudo ser entregado

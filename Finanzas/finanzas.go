@@ -1,11 +1,12 @@
 package main
 
-import(
-	"fmt"
+import (
 	"encoding/json"
-	"github.com/streadway/amqp"
+	"fmt"
 	"log"
 	"os"
+
+	"github.com/streadway/amqp"
 )
 
 func failOnError(err error, msg string) {
@@ -20,79 +21,79 @@ var balance_total float64
 
 var balance_prod float64
 
-type final struct{
-	Id 			string `json: "id"`
-	Seguimiento	string `json: "seguimiento"`
-	Tipo		string `json: "tipo"`
-	Valor		int32 `json: "valor"`
-	Intentos	int32 `json: "intentos`
-	Estado		string `json: "estado"`
-	Balance		float64 
+type final struct {
+	Id          string `json: "id"`
+	Seguimiento string `json: "seguimiento"`
+	Tipo        string `json: "tipo"`
+	Valor       int32  `json: "valor"`
+	Intentos    int32  `json: "intentos`
+	Estado      string `json: "estado"`
+	Balance     float64
 }
 
 var ordenes []final
 
-func jsonToStruct(a []byte) final{
+func jsonToStruct(a []byte) final {
 	var est final
 
 	err := json.Unmarshal([]byte(a), &est)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err)
 	}
 
 	return est
 }
 
-func calcularBalance(nuevo final){
+func calcularBalance(nuevo final) {
 
 	balance_prod = 0
 	ingresos = 0
 	gastos = 0
-	
-	if(nuevo.Tipo == "retail"){
-		balance_prod= float64(nuevo.Valor) - float64(10 *nuevo.Intentos)
+
+	if nuevo.Tipo == "retail" {
+		balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 		ingresos = float64(nuevo.Valor)
 		gastos = float64(10 * nuevo.Intentos)
-	}else if(nuevo.Tipo == "prioritario"){
-		if(nuevo.Estado == "Recibido"){
-			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
+	} else if nuevo.Tipo == "prioritario" {
+		if nuevo.Estado == "Recibido" {
+			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
 			gastos = float64(10 * nuevo.Intentos)
-		}else{
-			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
+		} else {
+			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = (0.3 * float64(nuevo.Valor))
 			gastos = float64(10 * nuevo.Intentos)
 		}
-	}else{
-		if(nuevo.Estado == "Recibido"){
-			balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
+	} else {
+		if nuevo.Estado == "Recibido" {
+			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
 			gastos = float64(10 * nuevo.Intentos)
-			}else{
-				balance_prod = float64(nuevo.Valor) - float64(10 * nuevo.Intentos)
-				gastos = float64(10 * nuevo.Intentos)
-			}
+		} else {
+			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+			gastos = float64(10 * nuevo.Intentos)
+		}
 	}
 }
 
-func actualizarCSV(nuevo final){
+func actualizarCSV(nuevo final) {
 
 	f, err := os.OpenFile("ordenes.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString("ID: " + nuevo.Id + "," + "Seguimiento: " + nuevo.Seguimiento + "," + "Valor: " + fmt.Sprint(nuevo.Valor) + "," + "Tipo: " + nuevo.Tipo + "," + "Intentos: " + fmt.Sprint(nuevo.Intentos) + "," + "Estado: " + nuevo.Estado + "," + "Balance: " + fmt.Sprintf("%f",nuevo.Balance) + "\n"); err != nil {
+	if _, err := f.WriteString("ID: " + nuevo.Id + "," + "Seguimiento: " + nuevo.Seguimiento + "," + "Valor: " + fmt.Sprint(nuevo.Valor) + "," + "Tipo: " + nuevo.Tipo + "," + "Intentos: " + fmt.Sprint(nuevo.Intentos) + "," + "Estado: " + nuevo.Estado + "," + "Balance: " + fmt.Sprintf("%f", nuevo.Balance) + "\n"); err != nil {
 		log.Println(err)
 	}
 }
 
-func main(){
+func main() {
 
 	balance_total = 0
 
 	log.Printf("Bienvenido al sistema de finanzas de PrestigioExpress")
-	
+
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -146,9 +147,3 @@ func main(){
 	log.Printf(" [*] Esperando actualizaciones de logistica. Presiona CTRL + C para salir.")
 	<-forever
 }
-
-
-
-
-
-

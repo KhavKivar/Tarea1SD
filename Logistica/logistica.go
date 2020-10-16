@@ -8,17 +8,17 @@ import (
 	"os"
 	"strings"
 	"time"
-	
-	"github.com/streadway/amqp"
+
 	"encoding/json"
-	
+
+	"github.com/streadway/amqp"
+
 	//"fmt"
 	"strconv"
 
 	pb "google.golang.org/TAREA1SD/Logistica/paquete"
 	"google.golang.org/grpc"
 )
-
 
 type server struct {
 	pb.UnimplementedLogisticaClienteServer
@@ -30,8 +30,8 @@ type orden struct {
 	idCamion    string
 	seguimiento string
 	intentos    int32
-	tipo 		string
-	valor  		int32
+	tipo        string
+	valor       int32
 }
 
 type paquete struct {
@@ -47,8 +47,8 @@ type finanzas struct {
 	Id          string `json: "id"`
 	Seguimiento string `json: "seguimiento"`
 	Tipo        string `json: "tipo"`
-	Valor       int32 `json: "valor"`
-	Intentos    int32 `json: "intentos"`
+	Valor       int32  `json: "valor"`
+	Intentos    int32  `json: "intentos"`
 	Estado      string `json: "estado"`
 }
 
@@ -58,8 +58,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func EnviarAFinanzas(pack finanzas){
-
+func EnviarAFinanzas(pack finanzas) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Falla en conectar a RabbitMQ")
 	defer conn.Close()
@@ -91,8 +90,100 @@ func EnviarAFinanzas(pack finanzas){
 	failOnError(err, "Falla en enviar el mensaje")
 }
 
-var allQueue []orden
+/*
+type retail struct {
+	lock   *sync.Mutex
+	retail []paquete
+}
 
+type prioritario struct {
+	lock        *sync.Mutex
+	prioritario []paquete
+}
+
+func initretail() retail {
+	return retail{&sync.Mutex{}, make([]paquete, 0)}
+}
+func (ret *retail) Enqueue(x paquete) {
+	for {
+		ret.lock.Lock()
+		ret.retail = append(ret.retail, x)
+		ret.lock.Unlock()
+		return
+	}
+}
+func (ret *retail) Dequeue() *paquete {
+	for {
+		if len(ret.retail) > 0 {
+			ret.lock.Lock()
+			x := ret.retail[0]
+			ret.retail = ret.retail[1:]
+			ret.lock.Unlock()
+			return &x
+		}
+		return nil
+	}
+	return nil
+}
+
+/
+type normal struct {
+	lock   *sync.Mutex
+	normal []paquete
+}
+
+func initnormal() normal {
+	return normal{&sync.Mutex{}, make([]paquete, 0)}
+}
+func (ret1 *normal) EnqueueNormal(x paquete) {
+	for {
+		ret1.lock.Lock()
+		ret1.normal = append(ret1.normal, x)
+		ret1.lock.Unlock()
+		return
+	}
+}
+func (ret1 *normal) Dequeue() *paquete {
+	for {
+		if len(ret1.normal) > 0 {
+			ret1.lock.Lock()
+			x := ret1.retail[0]
+			ret1.retail = ret1.normal[1:]
+			ret1.lock.Unlock()
+			return &x
+		}
+		return nil
+	}
+	return nil
+}
+
+func initl() retail {
+	return retail{&sync.Mutex{}, make([]paquete, 0)}
+}
+func (ret *retail) Enqueue(x paquete) {
+	for {
+		ret.lock.Lock()
+		ret.retail = append(ret.retail, x)
+		ret.lock.Unlock()
+		return
+	}
+}
+func (ret *retail) Dequeue() *paquete {
+	for {
+		if len(ret.retail) > 0 {
+			ret.lock.Lock()
+			x := ret.retail[0]
+			ret.retail = ret.retail[1:]
+			ret.lock.Unlock()
+			return &x
+		}
+		return nil
+	}
+	return nil
+}
+*/
+
+var allQueue []orden
 var retail []paquete
 var normal []paquete
 var prioritario []paquete
@@ -101,6 +192,7 @@ var numSeguimiento int
 
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
 	log.Printf("Pedido Recibido con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
+
 	var pack paquete
 	var ord orden
 
@@ -136,7 +228,6 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		ord.tipo = "retail"
 		retail = append(retail, pack)
 	}
-
 	allQueue = append(allQueue, ord)
 
 	//Se añade el pedido al archivo pedidos.csv
@@ -203,7 +294,7 @@ func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (
 			EnviarAFinanzas(nuevo)
 		}
 		i++
-	}	
+	}
 
 	log.Printf("Pedido id: %v intentos: %v Estado: %v\n ", in.GetId(), in.GetIntentos(), in.GetEstado())
 	return &pb.OrdenRecibida{Message: "Recibido"}, nil
@@ -216,14 +307,23 @@ func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.
 		if len(retail) > 0 {
 			var aux = retail[0]
 			//Dequeue
-			retail = retail[1:]
+			if len(retail) == 1 {
+				retail = make([]paquete, 0)
+			} else {
+				retail = retail[1:]
+			}
 			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v ", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 		if len(prioritario) > 0 {
 			var aux = prioritario[0]
 			//Dequeue
-			prioritario = prioritario[1:]
+			if len(prioritario) == 1 {
+				prioritario = make([]paquete, 0)
+			} else {
+				prioritario = prioritario[1:]
+			}
+
 			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
@@ -233,14 +333,23 @@ func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.
 		if len(prioritario) > 0 {
 			var aux = prioritario[0]
 			//Dequeue
-			prioritario = prioritario[1:]
+			if len(prioritario) == 1 {
+				prioritario = make([]paquete, 0)
+			} else {
+				prioritario = prioritario[1:]
+			}
 			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 		if len(normal) > 0 {
 			var aux = normal[0]
 			//Dequeue
-			normal = normal[1:]
+			if len(normal) == 1 {
+				normal = make([]paquete, 0)
+			} else {
+				normal = normal[1:]
+			}
+
 			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
