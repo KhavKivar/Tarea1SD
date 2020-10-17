@@ -247,7 +247,7 @@ func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion strin
 				log.Printf("Segundo paquete arribado en %v millisegundos \n", tiempow)
 				return pq
 			}
-			if tiempow >= tiempo {
+			if tiempow > tiempo {
 				return pq
 			}
 		}
@@ -299,10 +299,10 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Bienvenido a la simulacion de PrestigioExpress--Camiones \n")
 	fmt.Print("Tasa de refresco 500ms \n")
-	fmt.Print("Ingrese el tiempo en milisegundos a esperar por el segundo pedido\n")
+	fmt.Print("Ingrese el tiempo en milisegundos a esperar por el segundo pedido -- 1000ms = 1seg\n")
 	text, _ := reader.ReadString('\n')
 	tiempo, _ = strconv.Atoi(strings.TrimSuffix(text, "\n"))
-	fmt.Print("Ingrese el retardo en milisegundos en entregar un pedido\n")
+	fmt.Print("Ingrese el retardo en milisegundos en entregar un pedido -- 1000ms = 1seg\\n")
 	reader = bufio.NewReader(os.Stdin)
 	text, _ = reader.ReadString('\n')
 	tiempoEntrega, _ = strconv.Atoi(strings.TrimSuffix(text, "\n"))

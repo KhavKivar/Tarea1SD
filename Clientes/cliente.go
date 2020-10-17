@@ -36,7 +36,7 @@ func main() {
 			text, _ := reader.ReadString('\n')
 			if text == "1\n" {
 				fmt.Print("Se enviaran los pedidos que estan en el archivo pymes.csv\n")
-				fmt.Print("Ingrese el tiempo de envio entre los pedidos\n")
+				fmt.Print("Ingrese el tiempo [SEGUNDOS] de envio entre los pedidos \n")
 				reader := bufio.NewReader(os.Stdin)
 				text, _ := reader.ReadString('\n')
 				dut, _ := strconv.Atoi(strings.TrimSuffix(text, "\n"))
@@ -81,7 +81,7 @@ func main() {
 			}
 			if text == "2\n" {
 				fmt.Print("Se enviaran los pedidos que estan en el archivo retail.csv\n")
-				fmt.Print("Ingrese el tiempo de envio entre los pedidos\n")
+				fmt.Print("Ingrese el tiempo [SEGUNDOS] de envio entre los pedidos\n")
 				reader := bufio.NewReader(os.Stdin)
 				text, _ := reader.ReadString('\n')
 				dut, _ := strconv.Atoi(strings.TrimSuffix(text, "\n"))
@@ -124,36 +124,36 @@ func main() {
 				}
 			}
 		}
-		
+
 		if text == "2\n" {
 			fmt.Print("Ingresa el codigo de seguimiento del pedido\n")
 			text, _ := reader.ReadString('\n')
 			conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-			
+
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)
 			}
 			defer conn.Close()
-			
+
 			c := pb.NewLogisticaClienteClient(conn)
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			re, err := c.SolicitarSeguimiento(ctx, &pb.Seguimiento{Seguimiento: text})
-			
+
 			if err != nil {
 				log.Fatalf("No se puedo enviar el mensaje: %v \n", err)
 			}
-			
+
 			log.Printf("%s", re.GetEstado())
 			duration := time.Duration(1) * time.Second
 			time.Sleep(duration)
 		}
-		
+
 		if text == "3\n" {
 			fmt.Print("Adios\n")
 			os.Exit(0)
-		}	
-	
+		}
+
 	}
 
 }
