@@ -65,14 +65,40 @@ func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string)
 		if idCamion == "Retails 1" {
 			newPaquete.tipoCamion = idCamion
 			listRetail = append(listRetail, newPaquete)
+			f, err := os.OpenFile("C1_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Println(err)
+			}
+			defer f.Close()
+			if _, err := f.WriteString(newPaquete.id + "," + newPaquete.tipo + "," + fmt.Sprint(newPaquete.valor) + "," + newPaquete.origen + "," + newPaquete.destino + "," + fmt.Sprint(newPaquete.intentos) + "," + newPaquete.fechaEntrega + "," + newPaquete.tipoCamion + "," + newPaquete.estado + "\n"); err != nil {
+				log.Println(err)
+			}
 		}
 		if idCamion == "Retails 2" {
 			newPaquete.tipoCamion = idCamion
 			listRetail2 = append(listRetail2, newPaquete)
+			f, err := os.OpenFile("C2_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Println(err)
+			}
+			defer f.Close()
+			if _, err := f.WriteString(newPaquete.id + "," + newPaquete.tipo + "," + fmt.Sprint(newPaquete.valor) + "," + newPaquete.origen + "," + newPaquete.destino + "," + fmt.Sprint(newPaquete.intentos) + "," + newPaquete.fechaEntrega + "," + newPaquete.tipoCamion + "," + newPaquete.estado + "\n"); err != nil {
+				log.Println(err)
+			}
 		}
 		if idCamion == "normal" {
 			newPaquete.tipoCamion = idCamion
 			listNormal = append(listNormal, newPaquete)
+			newPaquete.tipoCamion = idCamion
+			listRetail2 = append(listRetail2, newPaquete)
+			f, err := os.OpenFile("C3_NORMAL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Println(err)
+			}
+			defer f.Close()
+			if _, err := f.WriteString(newPaquete.id + "," + newPaquete.tipo + "," + fmt.Sprint(newPaquete.valor) + "," + newPaquete.origen + "," + newPaquete.destino + "," + fmt.Sprint(newPaquete.intentos) + "," + newPaquete.fechaEntrega + "," + newPaquete.tipoCamion + "," + newPaquete.estado + "\n"); err != nil {
+				log.Println(err)
+			}
 		}
 		allPedidos = append(allPedidos, newPaquete)
 		return true, newPaquete
@@ -82,53 +108,11 @@ func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string)
 
 func random80() bool {
 	n := rand.Intn(10)
-	if n < 8 {
+	if n < 3 {
 		return true
 	}
 	return false
 }
-
-func clienteRecibe(maxIntentos int) (int, bool) {
-	intentos := 0
-	//Envio
-
-	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
-	if random80() {
-		return intentos, false
-	}
-
-	intentos++
-	if intentos == maxIntentos {
-		return intentos, true
-	}
-
-	//Primer reintento
-	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
-	if random80() {
-		return intentos, false
-	}
-	intentos++
-	if intentos == maxIntentos {
-		return intentos, true
-	}
-	//Segundo reintento
-	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
-	if random80() {
-		return intentos, false
-	}
-	intentos++
-	if intentos == maxIntentos {
-		return intentos, true
-	}
-	//Tercer reintento
-	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
-	if random80() {
-		return intentos, false
-	}
-	intentos++
-	return intentos, true
-}
-
 func updateValue(id string, est string, fecha string, intentos int32) {
 	i := 0
 	for i < len(allPedidos) {
@@ -143,6 +127,57 @@ func updateValue(id string, est string, fecha string, intentos int32) {
 		i++
 	}
 }
+
+func clienteRecibe(maxIntentos int) (int, bool) {
+	//Se Envia
+	intentos := 0
+	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
+	if random80() {
+		return intentos, true
+
+	}
+	//Primer intento
+	intentos++
+	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
+	var rand80 = random80()
+	if rand80 || maxIntentos == intentos {
+		if maxIntentos == intentos {
+			if rand80 {
+				return intentos, true
+			}
+			return intentos, false
+		}
+		return intentos, true
+	}
+	//Segundo intento
+	intentos++
+	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
+	var rand80_2 = random80()
+	if rand80_2 || maxIntentos == intentos {
+		if maxIntentos == intentos {
+			if rand80_2 {
+				return intentos, true
+			}
+			return intentos, false
+		}
+		return intentos, true
+	}
+	//tercer intento
+	intentos++
+	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
+	var rand80_3 = random80()
+	if rand80_3 || maxIntentos == intentos {
+		if maxIntentos == intentos {
+			if rand80_3 {
+				return intentos, true
+			}
+			return intentos, false
+		}
+		return intentos, true
+	}
+	return -1, false
+}
+
 func sendEstado(p1 paquete) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -150,99 +185,50 @@ func sendEstado(p1 paquete) {
 	log.Printf("M: %v", r.GetMessage())
 }
 
-func entregarPyme(p1 paquete) {
-	//Calculamos el max de intentos en base al valor del producto
-	maxInt := math.Floor(float64(p1.valor) / 10)
-	if maxInt == 0 {
-		maxInt++
-	}
-	if maxInt > 2 {
-		maxInt = 2
-	}
-	p1.estado = "En camino"
-	sendEstado(p1)
-	var intentos, sumador = clienteRecibe(int(maxInt))
-	t := time.Now()
-	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
-	p1.intentos = int32(intentos)
-	if sumador {
-		p1.intentos = p1.intentos - 1
-	}
-	log.Printf("Paquete Entregado id: %v por camion: %v\n Fecha Entrega:%v", p1.id, p1.tipoCamion, p1.fechaEntrega)
-	if intentos == int(maxInt) {
-
-		//El pedido no pudo ser entregado
-		p1.estado = "No Recibido"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		//
-		r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
-		log.Printf("M: %v", r.GetMessage())
-
-	} else {
-		//El pedido fue entregado con exito
-		p1.estado = "Recibido"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
-		log.Printf("M: %v", r.GetMessage())
-	}
-	updateValue(p1.id, p1.estado, p1.fechaEntrega, p1.intentos)
-}
-
-func entregarRetails(p1 paquete) {
-	maxInt := 3
-	p1.estado = "En camino"
-	sendEstado(p1)
-
-	var intentos, sumador = clienteRecibe(maxInt)
-	t := time.Now()
-	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
-	p1.intentos = int32(intentos)
-	if sumador {
-		p1.intentos = p1.intentos - 1
-	}
-
-	log.Printf("Paquete Entregado id: %v por camion: %v\n", p1.id, p1.tipoCamion)
-	if intentos == 3 {
-		//El pedido no pudo ser entregado
-		p1.estado = "No Recibido"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
-		log.Printf("M: %v", r.GetMessage())
-	} else {
-		//El pedido fue entregado con exito
-		p1.estado = "Recibido"
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
-		log.Printf("M: %v", r.GetMessage())
-
-	}
-	updateValue(p1.id, p1.estado, p1.fechaEntrega, p1.intentos)
-}
-
-func entregaDispatcher(p1 paquete) {
+func entregaPedido(p1 paquete) {
+	var maxInt = 3
+	//Si es pyme calculamos el maxInt
 	if p1.origen == "pyme" {
-		entregarPyme(p1)
-	} else {
-		entregarRetails(p1)
+		maxInt = int(math.Floor(float64(p1.valor) / 10))
+		if maxInt == 0 {
+			maxInt++
+		}
+		if maxInt > 2 {
+			maxInt = 2
+		}
 	}
+	p1.estado = "En camino"
+	sendEstado(p1)
+
+	var intentos, entrego = clienteRecibe(maxInt)
+	t := time.Now()
+	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
+	p1.intentos = int32(intentos)
+	if entrego {
+		p1.estado = "Recibido"
+		log.Printf("Paquete recibido id: %v por camion: %v\n ", p1.id, p1.tipoCamion)
+	} else {
+		p1.estado = "No Recibido"
+		log.Printf("Paquete no pudo ser recibido id: %v por camion: %v\n ", p1.id, p1.tipoCamion)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
+	log.Printf("M: %v", r.GetMessage())
 }
 
 func entregarPedido(p1 paquete, p2 paquete) {
 	if p2.id != "null" {
 		//Entregamos el paquete con mas valor primero
 		if p1.valor >= p2.valor {
-			entregaDispatcher(p1)
-			entregaDispatcher(p2)
+			entregaPedido(p1)
+			entregaPedido(p2)
 		} else {
-			entregaDispatcher(p2)
-			entregaDispatcher(p1)
+			entregaPedido(p2)
+			entregaPedido(p1)
 		}
 	} else {
-		entregaDispatcher(p1)
+		entregaPedido(p1)
 	}
 }
 func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) paquete {
@@ -291,6 +277,25 @@ var cb pb.LogisticaClienteClient
 
 func main() {
 	runtime.GOMAXPROCS(3)
+	os.Remove("C1_RETAIL.csv")
+	os.Remove("C2_RETAIL.csv")
+	os.Remove("C3_NORMAL.csv")
+	f, err := os.OpenFile("C1_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+	if _, err := f.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err != nil {
+		log.Println(err)
+	}
+	f1, _ := os.OpenFile("C2_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+	if _, err1 := f1.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err1 != nil {
+		log.Println(err1)
+	}
+	f2, _ := os.OpenFile("C3_NORMAL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+	if _, err2 := f2.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err2 != nil {
+		log.Println(err2)
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Bienvenido a la simulacion de PrestigioExpress--Camiones \n")
 	fmt.Print("Tasa de refresco 500ms \n")
