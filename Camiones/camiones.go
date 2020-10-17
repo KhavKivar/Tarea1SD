@@ -221,6 +221,28 @@ func entregarPedido(p1 paquete, p2 paquete) {
 		entregaDispatcher(p1)
 	}
 }
+func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) paquete {
+	var pq paquete
+
+	ticker := time.NewTicker(100 * time.Millisecond)
+	var rr bool
+	pq.id = "null"
+	var tiempow = 0
+	for {
+		select {
+		case <-ticker.C:
+			rr, pq = getPaquete(c, tipoCamion, idCamion)
+			tiempow = tiempow + 100
+			if rr {
+				log.Printf("Segundo paquete arribado en %v millisegundos \n", tiempow)
+				return pq
+			}
+			if tiempow >= tiempo {
+				return pq
+			}
+		}
+	}
+}
 
 func dispatcher(c pb.LogisticaClienteClient, tipoCamion string, idCamion string, wg *sync.WaitGroup) bool {
 
@@ -230,43 +252,8 @@ func dispatcher(c pb.LogisticaClienteClient, tipoCamion string, idCamion string,
 		//Intentamos obtener el segundo paquete
 		var result2, segundoPaquete = getPaquete(c, tipoCamion, idCamion)
 		if !result2 {
-			log.Printf("Fallo en obtener el segundo paquete\n")
-			var exito bool = false
-			var rr bool
-			var tercerPaquete paquete
-			//Ticker con tasa de refresco 100ms
-			Ti := time.NewTicker(100 * time.Millisecond)
-			mychannel := make(chan bool)
-			go func() {
-				// Using for loop
-				for {
-					// Select statement
-					select {
-					// Case statement
-					case <-mychannel:
-						rr, tercerPaquete = getPaquete(c, tipoCamion, idCamion)
-						if rr {
-							exito = true
-							Ti.Stop()
-							mychannel <- true
-							break
-						}
-					}
-				}
-			}()
-			time.Sleep(time.Duration(tiempo) * time.Millisecond)
-			// Calling Stop() method
-			Ti.Stop()
-			// Setting the value of channel
-			mychannel <- true
-
-			//Se obtuvo el segundo paquete
-			if exito {
-				entregarPedido(primerPaquete, tercerPaquete)
-			} else {
-				tercerPaquete.id = "null"
-				entregarPedido(primerPaquete, tercerPaquete)
-			}
+			var tercerPaquete = logicSegundo(c, tipoCamion, idCamion)
+			entregarPedido(primerPaquete, tercerPaquete)
 		} else {
 			//Procesamos el pedido
 			entregarPedido(primerPaquete, segundoPaquete)
@@ -277,12 +264,6 @@ func dispatcher(c pb.LogisticaClienteClient, tipoCamion string, idCamion string,
 }
 
 var cb pb.LogisticaClienteClient
-
-func threeCamion(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
-	go dispatcher(c, "retails", "Retails 1", wg)
-	go dispatcher(c, "retails", "Retails 2", wg)
-	go dispatcher(c, "normal", "normal", wg)
-}
 
 func main() {
 	runtime.GOMAXPROCS(3)
@@ -305,16 +286,47 @@ func main() {
 	defer conn.Close()
 	c := pb.NewLogisticaClienteClient(conn)
 	cb = c
-
-	r1 := time.NewTicker(500 * time.Millisecond)
 	var w sync.WaitGroup
+	var w2 sync.WaitGroup
+	var w3 sync.WaitGroup
+	go dispatcherR(c, &w)
+	go dispatcherN(c, &w2)
+	dispatcherR2(c, &w3)
+}
 
+func dispatcherR(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
+	r1 := time.NewTicker(500 * time.Millisecond)
 	for {
 		select {
 		case <-r1.C:
-			w.Add(3)
-			threeCamion(c, &w)
-			w.Wait()
+			wg.Add(1)
+			go dispatcher(c, "retails", "Retails 1", wg)
+			wg.Wait()
 		}
 	}
+}
+
+func dispatcherN(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
+	r1 := time.NewTicker(500 * time.Millisecond)
+	for {
+		select {
+		case <-r1.C:
+			wg.Add(1)
+			go dispatcher(c, "normal", "normal", wg)
+			wg.Wait()
+		}
+	}
+
+}
+func dispatcherR2(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
+	r1 := time.NewTicker(500 * time.Millisecond)
+	for {
+		select {
+		case <-r1.C:
+			wg.Add(1)
+			go dispatcher(c, "retails", "Retails 2", wg)
+			wg.Wait()
+		}
+	}
+
 }
