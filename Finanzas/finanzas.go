@@ -21,7 +21,7 @@ var balance_total float64
 
 var balance_prod float64
 
-var todos_los_datos []float64
+var todos_los_datos [3]float64
 
 type final struct {
 	Id          string `json: "id"`
@@ -136,9 +136,13 @@ func main() {
 			actualizarCSV(actualizacion)
 			ordenes = append(ordenes, actualizacion)
 			balance_total = balance_total + ingresos - gastos
+			todos_los_datos[1] = 0
+			todos_los_datos[2] = 0
+
 			todos_los_datos[0] = balance_total
 			todos_los_datos[1] = todos_los_datos[1] + ingresos
 			todos_los_datos[2] = todos_los_datos[2] + gastos
+
 			log.Printf("-------------------------------------------------------------------------------------")
 			log.Printf("El estado de la entrega es %s, es de tipo %s, su valor es de %d y los reintentos fueron %d", actualizacion.Estado, actualizacion.Tipo, actualizacion.Valor, actualizacion.Intentos)
 			log.Printf("El balance actual es:")

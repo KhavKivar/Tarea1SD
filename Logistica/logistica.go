@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"encoding/json"
@@ -90,105 +91,13 @@ func EnviarAFinanzas(pack finanzas) {
 	failOnError(err, "Falla en enviar el mensaje")
 }
 
-/*
-type retail struct {
-	lock   *sync.Mutex
-	retail []paquete
-}
-
-type prioritario struct {
-	lock        *sync.Mutex
-	prioritario []paquete
-}
-
-func initretail() retail {
-	return retail{&sync.Mutex{}, make([]paquete, 0)}
-}
-func (ret *retail) Enqueue(x paquete) {
-	for {
-		ret.lock.Lock()
-		ret.retail = append(ret.retail, x)
-		ret.lock.Unlock()
-		return
-	}
-}
-func (ret *retail) Dequeue() *paquete {
-	for {
-		if len(ret.retail) > 0 {
-			ret.lock.Lock()
-			x := ret.retail[0]
-			ret.retail = ret.retail[1:]
-			ret.lock.Unlock()
-			return &x
-		}
-		return nil
-	}
-	return nil
-}
-
-/
-type normal struct {
-	lock   *sync.Mutex
-	normal []paquete
-}
-
-func initnormal() normal {
-	return normal{&sync.Mutex{}, make([]paquete, 0)}
-}
-func (ret1 *normal) EnqueueNormal(x paquete) {
-	for {
-		ret1.lock.Lock()
-		ret1.normal = append(ret1.normal, x)
-		ret1.lock.Unlock()
-		return
-	}
-}
-func (ret1 *normal) Dequeue() *paquete {
-	for {
-		if len(ret1.normal) > 0 {
-			ret1.lock.Lock()
-			x := ret1.retail[0]
-			ret1.retail = ret1.normal[1:]
-			ret1.lock.Unlock()
-			return &x
-		}
-		return nil
-	}
-	return nil
-}
-
-func initl() retail {
-	return retail{&sync.Mutex{}, make([]paquete, 0)}
-}
-func (ret *retail) Enqueue(x paquete) {
-	for {
-		ret.lock.Lock()
-		ret.retail = append(ret.retail, x)
-		ret.lock.Unlock()
-		return
-	}
-}
-func (ret *retail) Dequeue() *paquete {
-	for {
-		if len(ret.retail) > 0 {
-			ret.lock.Lock()
-			x := ret.retail[0]
-			ret.retail = ret.retail[1:]
-			ret.lock.Unlock()
-			return &x
-		}
-		return nil
-	}
-	return nil
-}
-*/
-
 var allQueue []orden
-var retail []paquete
-var normal []paquete
-var prioritario []paquete
 
 var numSeguimiento int
+
+var mutexRetail safeStruct
+var mutexNormal safeStruct
+var mutexPrioritario safeStruct
 
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
 	log.Printf("Pedido Recibido con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
@@ -217,17 +126,18 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 		if in.GetPrioritario() == 1 {
 			pack.tipo = "prioritario"
 			ord.tipo = "prioritario"
-			prioritario = append(prioritario, pack)
+			mutexPrioritario.appendSafe(pack)
 		} else {
 			pack.tipo = "normal"
 			ord.tipo = "normal"
-			normal = append(normal, pack)
+			mutexNormal.appendSafe(pack)
 		}
 	} else {
 		pack.tipo = "retail"
 		ord.tipo = "retail"
-		retail = append(retail, pack)
+		mutexRetail.appendSafe(pack)
 	}
+
 	allQueue = append(allQueue, ord)
 
 	//Se añade el pedido al archivo pedidos.csv
@@ -240,7 +150,6 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	if _, err := f.WriteString(t.Format("2006-01-02 15:04:05") + "," + in.GetId() + "," + in.GetProducto() + "," + fmt.Sprint(in.GetValor()) + "," + in.GetTienda() + "," + in.GetDestino() + "," + fmt.Sprint(in.GetPrioritario()) + "," + ord.seguimiento + "," + "En bodega" + "\n"); err != nil {
 		log.Println(err)
 	}
-
 	log.Printf("Se envio Numero de seguimiento")
 	return &pb.OrdenRecibida{Message: "Orden recibida " + in.GetId() + ",Tu numero de seguimiento es: " + ord.seguimiento}, nil
 }
@@ -261,12 +170,14 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 
 func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*pb.OrdenRecibida, error) {
 	i := 0
+
 	for i < len(allQueue) {
 		if allQueue[i].id == in.GetId() {
+
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
 			allQueue[i] = obj
-
+			log.Println(allQueue[i].estado)
 			return &pb.OrdenRecibida{Message: "Campo actualizado"}, nil
 		}
 		i++
@@ -275,7 +186,7 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 }
 
 func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (*pb.OrdenRecibida, error) {
-	//Actualizar Pedido
+
 	i := 0
 	var nuevo finanzas
 	for i < len(allQueue) {
@@ -296,61 +207,82 @@ func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (
 		i++
 	}
 
-	log.Printf("Pedido id: %v intentos: %v Estado: %v\n ", in.GetId(), in.GetIntentos(), in.GetEstado())
+	log.Printf("Orden finaliza proceso de entrega id: %v intentos: %v Estado: %v ", in.GetId(), in.GetIntentos(), in.GetEstado())
 	return &pb.OrdenRecibida{Message: "Recibido"}, nil
+}
+
+type safeStruct struct {
+	retail []paquete
+	mux    sync.Mutex
+}
+
+func (c *safeStruct) getSafe(indice int) paquete {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	return c.retail[indice]
+}
+
+func (c *safeStruct) updateSafe(p1 paquete, indice int) {
+	c.mux.Lock()
+	c.retail[indice] = p1
+	c.mux.Unlock()
+}
+
+func (c *safeStruct) appendSafe(p1 paquete) {
+	c.mux.Lock()
+	c.retail = append(c.retail, p1)
+	c.mux.Unlock()
+}
+
+func (c *safeStruct) lenSafe() int {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	return len(c.retail)
+}
+
+func (c *safeStruct) dequeueSafe() paquete {
+	c.mux.Lock()
+	var p1 paquete
+	p1.id = "null"
+	if len(c.retail) > 0 {
+		p1 = c.retail[0]
+		if len(c.retail) == 1 {
+			c.retail = make([]paquete, 0)
+		} else {
+			c.retail = c.retail[1:]
+		}
+
+	}
+	defer c.mux.Unlock()
+	return p1
 }
 
 func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.Paquete, error) {
 	var y string = strings.TrimSuffix(in.Tipo, "\n")
 	if y == "retails" {
 		//Ver si hay paquetes en retails o prioritario
-		if len(retail) > 0 {
-			var aux = retail[0]
-			//Dequeue
-			if len(retail) == 1 {
-				retail = make([]paquete, 0)
-			} else {
-				retail = retail[1:]
-			}
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v ", aux.id, aux.origen, aux.destino, in.GetTipo())
+		var aux = mutexRetail.dequeueSafe()
+		if aux.id != "null" {
+			log.Printf("Orden enviada a camion id: %v, origen: %v, destino: %v a Camion tipo: %v ", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
-		if len(prioritario) > 0 {
-			var aux = prioritario[0]
-			//Dequeue
-			if len(prioritario) == 1 {
-				prioritario = make([]paquete, 0)
-			} else {
-				prioritario = prioritario[1:]
-			}
+		aux = mutexPrioritario.dequeueSafe()
+		if aux.id != "null" {
+			log.Printf("Orden enviada a camion id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
+			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
+		}
 
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
-			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
-		}
 	}
 	if y == "normal" {
 		//Ver si hay paquetes en prioritario o normal
-		if len(prioritario) > 0 {
-			var aux = prioritario[0]
-			//Dequeue
-			if len(prioritario) == 1 {
-				prioritario = make([]paquete, 0)
-			} else {
-				prioritario = prioritario[1:]
-			}
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
+		var aux = mutexPrioritario.dequeueSafe()
+		if aux.id != "null" {
+			log.Printf("Orden enviada a camion id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
-		if len(normal) > 0 {
-			var aux = normal[0]
-			//Dequeue
-			if len(normal) == 1 {
-				normal = make([]paquete, 0)
-			} else {
-				normal = normal[1:]
-			}
-
-			log.Printf("Paquete Enviado id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
+		aux = mutexNormal.dequeueSafe()
+		if aux.id != "null" {
+			log.Printf("Orden enviada a camion id: %v, origen: %v, destino: %v a Camion tipo: %v", aux.id, aux.origen, aux.destino, in.GetTipo())
 			return &pb.Paquete{Id: aux.id, Tipo: aux.tipo, Valor: aux.valor, Origen: aux.origen, Destino: aux.destino, Intentos: aux.intentos}, nil
 		}
 	}
