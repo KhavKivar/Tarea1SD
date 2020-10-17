@@ -88,30 +88,45 @@ func random80() bool {
 	return false
 }
 
-func clienteRecibe(maxIntentos int) int {
+func clienteRecibe(maxIntentos int) (int, bool) {
 	intentos := 0
+	//Envio
+
 	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
 	if random80() {
-		return intentos
+		return intentos, false
+	}
+
+	intentos++
+	if intentos == maxIntentos {
+		return intentos, true
+	}
+
+	//Primer reintento
+	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
+	if random80() {
+		return intentos, false
 	}
 	intentos++
 	if intentos == maxIntentos {
-		return intentos
+		return intentos, true
 	}
+	//Segundo reintento
 	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
 	if random80() {
-		return intentos
+		return intentos, false
 	}
 	intentos++
 	if intentos == maxIntentos {
-		return intentos
+		return intentos, true
 	}
+	//Tercer reintento
 	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
 	if random80() {
-		return intentos
+		return intentos, false
 	}
 	intentos++
-	return intentos
+	return intentos, true
 }
 
 func updateValue(id string, est string, fecha string, intentos int32) {
@@ -146,16 +161,21 @@ func entregarPyme(p1 paquete) {
 	}
 	p1.estado = "En camino"
 	sendEstado(p1)
-	var intentos = clienteRecibe(int(maxInt))
+	var intentos, sumador = clienteRecibe(int(maxInt))
 	t := time.Now()
 	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
 	p1.intentos = int32(intentos)
+	if sumador {
+		p1.intentos = p1.intentos - 1
+	}
 	log.Printf("Paquete Entregado id: %v por camion: %v\n Fecha Entrega:%v", p1.id, p1.tipoCamion, p1.fechaEntrega)
 	if intentos == int(maxInt) {
+
 		//El pedido no pudo ser entregado
 		p1.estado = "No Recibido"
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
+		//
 		r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
 		log.Printf("M: %v", r.GetMessage())
 
@@ -175,10 +195,14 @@ func entregarRetails(p1 paquete) {
 	p1.estado = "En camino"
 	sendEstado(p1)
 
-	var intentos = clienteRecibe(maxInt)
+	var intentos, sumador = clienteRecibe(maxInt)
 	t := time.Now()
 	p1.fechaEntrega = t.Format("2006-01-02 15:04:05")
 	p1.intentos = int32(intentos)
+	if sumador {
+		p1.intentos = p1.intentos - 1
+	}
+
 	log.Printf("Paquete Entregado id: %v por camion: %v\n", p1.id, p1.tipoCamion)
 	if intentos == 3 {
 		//El pedido no pudo ser entregado
