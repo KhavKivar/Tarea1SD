@@ -108,7 +108,7 @@ func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string)
 
 func random80() bool {
 	n := rand.Intn(10)
-	if n < 3 {
+	if n < 8 {
 		return true
 	}
 	return false
