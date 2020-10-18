@@ -1,8 +1,23 @@
 id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado
+<<<<<<< HEAD
 BE785,prioritario,8,pyme,casa-E,0,,Retails 2,En proceso de entrega
 PF225,prioritario,25,pyme,casa-P,0,,Retails 2,En proceso de entrega
+=======
+BE127,prioritario,15,pyme,casa-K,0,,Retails 2,En proceso de entrega
+BE666,prioritario,8,pyme,casa-A,0,,Retails 2,En proceso de entrega
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 PF452,prioritario,115,pyme,casa-I,0,,Retails 2,En proceso de entrega
 DE654,prioritario,11,pyme,casa-V,0,,Retails 2,En proceso de entrega
 DE245,prioritario,18,pyme,casa-Y,0,,Retails 2,En proceso de entrega
 CC175,prioritario,6,pyme,casa-A,0,,Retails 2,En proceso de entrega
+<<<<<<< HEAD
 GG458,prioritario,3,pyme,casa-C,0,,Retails 2,En proceso de entrega
+=======
+CC147,prioritario,14,pyme,casa-C,0,,Retails 2,En proceso de entrega
+SA1554KF,retail,10,tienda-A,casa-A,0,,Retails 2,En proceso de entrega
+SA1684AH,retail,12,tienda-B,casa-B,0,,Retails 2,En proceso de entrega
+SA5713AS,retail,20,tienda-B,casa-C,0,,Retails 2,En proceso de entrega
+SA2589TR,retail,5,tienda-C,casa-P,0,,Retails 2,En proceso de entrega
+SA3698HJ,retail,25,tienda-C,casa-A,0,,Retails 2,En proceso de entrega
+SA2563AS,retail,15,tienda-A,casa-N,0,,Retails 2,En proceso de entrega
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7

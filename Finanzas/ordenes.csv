@@ -516,6 +516,7 @@ ID: CC175,Seguimiento: 11134,Valor: 6,Tipo: prioritario,Intentos: 0,Estado: Reci
 ID: CC121,Seguimiento: 11135,Valor: 16,Tipo: normal,Intentos: 0,Estado: Recibido,Balance: 16.000000
 ID: CC147,Seguimiento: 11132,Valor: 11,Tipo: prioritario,Intentos: 0,Estado: Recibido,Balance: 11.000000
 ID: CC147,Seguimiento: 11136,Valor: 14,Tipo: prioritario,Intentos: 0,Estado: Recibido,Balance: 14.000000
+<<<<<<< HEAD
 ID: SA1684AH,Seguimiento: 0,Valor: 12,Tipo: retail,Intentos: 0,Estado: Recibido,Balance: 12.000000
 ID: SA5698PO,Seguimiento: 0,Valor: 110,Tipo: retail,Intentos: 0,Estado: Recibido,Balance: 110.000000
 ID: SA1554KF,Seguimiento: 0,Valor: 10,Tipo: retail,Intentos: 0,Estado: Recibido,Balance: 10.000000
@@ -774,3 +775,5 @@ ID: GG124,Seguimiento: 11140,Valor: 5,Tipo: normal,Intentos: 0,Estado: Recibido,
 ID: GG568,Seguimiento: 11141,Valor: 5,Tipo: normal,Intentos: 0,Estado: Recibido,Balance: 5.000000
 ID: GG301,Seguimiento: 11142,Valor: 6,Tipo: normal,Intentos: 0,Estado: Recibido,Balance: 6.000000
 ID: GG458,Seguimiento: 11143,Valor: 3,Tipo: prioritario,Intentos: 0,Estado: Recibido,Balance: 3.000000
+=======
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7

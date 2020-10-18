@@ -44,6 +44,7 @@ type paquete struct {
 	intentos int32
 }
 
+// Struct que se envia a finanzas
 type finanzas struct {
 	ID          string `json:"id"`
 	Seguimiento string `json:"seguimiento"`
@@ -53,13 +54,18 @@ type finanzas struct {
 	Estado      string `json:"estado"`
 }
 
+// Funcion que imprime errores de RabbitMQ
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
+<<<<<<< HEAD
 //EnviarAFinanzas ...
+=======
+// Funcion que recibe un struct del tipo finanzas, lo transforma en JSON y lo envia al server
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 func EnviarAFinanzas(pack finanzas) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Falla en conectar a RabbitMQ")
@@ -155,6 +161,7 @@ func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecib
 	return &pb.OrdenRecibida{Message: ord.seguimiento}, nil
 }
 
+// Funcion que responde el estado de un paquete de acuerdo a la consulta de un numero de seguimiento por parte de un cliente
 func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (*pb.Estado, error) {
 	i := 0
 	log.Printf("Consulta recibida por el numero de seguimiento: %v", in.GetSeguimiento())
@@ -178,6 +185,10 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
 			allQueue[i] = obj
+<<<<<<< HEAD
+=======
+			log.Println(allQueue[i].estado)
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 			return &pb.OrdenRecibida{Message: "Campo actualizado"}, nil
 		}
 		i++

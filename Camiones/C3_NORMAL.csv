@@ -1,8 +1,17 @@
 id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado
+<<<<<<< HEAD
 BE127,prioritario,15,pyme,casa-K,0,,normal,En proceso de entrega
 BE855,normal,10,pyme,casa-A,0,,normal,En proceso de entrega
 BE654,normal,10,pyme,casa-D,0,,normal,En proceso de entrega
 PF654,prioritario,50,pyme,casa-B,0,,normal,En proceso de entrega
+=======
+BE855,normal,10,pyme,casa-A,0,,normal,En proceso de entrega
+BE654,normal,10,pyme,casa-D,0,,normal,En proceso de entrega
+PF111,prioritario,10,pyme,casa-N,0,,normal,En proceso de entrega
+PF225,prioritario,25,pyme,casa-P,0,,normal,En proceso de entrega
+DE245,prioritario,18,pyme,casa-Y,0,,normal,En proceso de entrega
+CC147,prioritario,11,pyme,casa-C,0,,normal,En proceso de entrega
+>>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 PF125,normal,75,pyme,casa-N,0,,normal,En proceso de entrega
 PF111,prioritario,10,pyme,casa-N,0,,normal,En proceso de entrega
 PF245,normal,20,pyme,casa-S,0,,normal,En proceso de entrega
@@ -20,7 +29,3 @@ CC121,normal,16,pyme,casa-X,0,,normal,En proceso de entrega
 CC147,prioritario,14,pyme,casa-C,0,,normal,En proceso de entrega
 CC121,normal,10,pyme,casa-A,0,,normal,En proceso de entrega
 CC454,normal,7,pyme,casa-Q,0,,normal,En proceso de entrega
-GG257,normal,4,pyme,casa-B,0,,normal,En proceso de entrega
-GG124,normal,5,pyme,casa-A,0,,normal,En proceso de entrega
-GG568,normal,5,pyme,casa-L,0,,normal,En proceso de entrega
-GG301,normal,6,pyme,casa-D,0,,normal,En proceso de entrega

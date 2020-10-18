@@ -9,6 +9,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// Funcion que printea errores de RabbitMQ
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
@@ -23,6 +24,7 @@ var balance_prod float64
 
 var todos_los_datos [3]float64
 
+// Struct en las que los mensajes en JSON se mapean
 type final struct {
 	Id          string `json: "id"`
 	Seguimiento string `json: "seguimiento"`
@@ -35,6 +37,7 @@ type final struct {
 
 var ordenes []final
 
+// Funcion que transforma el mensaje en JSON que llega de Rabbit en struct
 func jsonToStruct(a []byte) final {
 	var est final
 
@@ -46,6 +49,7 @@ func jsonToStruct(a []byte) final {
 	return est
 }
 
+// Funcion que calcula el balance de cada producto que se actualiza a Recibido o No Recibido dependiendo de su tipo
 func calcularBalance(nuevo final) {
 
 	balance_prod = 0
@@ -78,6 +82,7 @@ func calcularBalance(nuevo final) {
 	}
 }
 
+// Funcion que crea el csv para llevar registro de ordenes completadas
 func actualizarCSV(nuevo final) {
 
 	f, err := os.OpenFile("ordenes.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -90,6 +95,7 @@ func actualizarCSV(nuevo final) {
 	}
 }
 
+// La funcion main tiene toda la conexion de receiver de RabbitMQ, sumado a una funcion de go para actualizar el balance e imprimir datos en pantalla
 func main() {
 
 	balance_total = 0
@@ -97,11 +103,11 @@ func main() {
 	log.Printf("Bienvenido al sistema de finanzas de PrestigioExpress")
 
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
+	failOnError(err, "Fallo en conectar con RabbitMQ")
 	defer conn.Close()
 
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	failOnError(err, "Fallo al abrir el canal")
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
@@ -112,7 +118,7 @@ func main() {
 		false,   // no-wait
 		nil,     // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "Fallo al crear la queue")
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -123,7 +129,7 @@ func main() {
 		false,  // no-wait
 		nil,    // args
 	)
-	failOnError(err, "Failed to register a consumer")
+	failOnError(err, "Fallo en sacar un mensaje de la queue")
 
 	forever := make(chan bool)
 
