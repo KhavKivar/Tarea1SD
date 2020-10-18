@@ -18,20 +18,18 @@ func failOnError(err error, msg string) {
 
 var ingresos float64
 var gastos float64
-var balance_total float64
-
-var balance_prod float64
-
-var todos_los_datos [3]float64
+var balanceTotal float64
+var balanceProd float64
+var todoslosDatos [3]float64
 
 // Struct en las que los mensajes en JSON se mapean
 type final struct {
-	Id          string `json: "id"`
-	Seguimiento string `json: "seguimiento"`
-	Tipo        string `json: "tipo"`
-	Valor       int32  `json: "valor"`
-	Intentos    int32  `json: "intentos`
-	Estado      string `json: "estado"`
+	ID          string `json:"id"`
+	Seguimiento string `json:"seguimiento"`
+	Tipo        string `json:"tipo"`
+	Valor       int32  `json:"valor"`
+	Intentos    int32  `json:"intentos"`
+	Estado      string `json:"estado"`
 	Balance     float64
 }
 
@@ -52,31 +50,31 @@ func jsonToStruct(a []byte) final {
 // Funcion que calcula el balance de cada producto que se actualiza a Recibido o No Recibido dependiendo de su tipo
 func calcularBalance(nuevo final) {
 
-	balance_prod = 0
+	balanceProd = 0
 	ingresos = 0
 	gastos = 0
 
 	if nuevo.Tipo == "retail" {
-		balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+		balanceProd = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 		ingresos = float64(nuevo.Valor)
 		gastos = float64(10 * nuevo.Intentos)
 	} else if nuevo.Tipo == "prioritario" {
 		if nuevo.Estado == "Recibido" {
-			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+			balanceProd = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
 			gastos = float64(10 * nuevo.Intentos)
 		} else {
-			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+			balanceProd = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = (0.3 * float64(nuevo.Valor))
 			gastos = float64(10 * nuevo.Intentos)
 		}
 	} else {
 		if nuevo.Estado == "Recibido" {
-			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+			balanceProd = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			ingresos = float64(nuevo.Valor)
 			gastos = float64(10 * nuevo.Intentos)
 		} else {
-			balance_prod = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
+			balanceProd = float64(nuevo.Valor) - float64(10*nuevo.Intentos)
 			gastos = float64(10 * nuevo.Intentos)
 		}
 	}
@@ -90,7 +88,7 @@ func actualizarCSV(nuevo final) {
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString("ID: " + nuevo.Id + "," + "Seguimiento: " + nuevo.Seguimiento + "," + "Valor: " + fmt.Sprint(nuevo.Valor) + "," + "Tipo: " + nuevo.Tipo + "," + "Intentos: " + fmt.Sprint(nuevo.Intentos) + "," + "Estado: " + nuevo.Estado + "," + "Balance: " + fmt.Sprintf("%f", nuevo.Balance) + "\n"); err != nil {
+	if _, err := f.WriteString("ID: " + nuevo.ID + "," + "Seguimiento: " + nuevo.Seguimiento + "," + "Valor: " + fmt.Sprint(nuevo.Valor) + "," + "Tipo: " + nuevo.Tipo + "," + "Intentos: " + fmt.Sprint(nuevo.Intentos) + "," + "Estado: " + nuevo.Estado + "," + "Balance: " + fmt.Sprintf("%f", nuevo.Balance) + "\n"); err != nil {
 		log.Println(err)
 	}
 }
@@ -98,7 +96,13 @@ func actualizarCSV(nuevo final) {
 // La funcion main tiene toda la conexion de receiver de RabbitMQ, sumado a una funcion de go para actualizar el balance e imprimir datos en pantalla
 func main() {
 
-	balance_total = 0
+	//REMOVE FILE
+	e := os.Remove("ordenes.csv")
+	if e != nil {
+		log.Fatal(e)
+
+	}
+	balanceTotal = 0
 
 	log.Printf("Bienvenido al sistema de finanzas de PrestigioExpress")
 
@@ -138,22 +142,22 @@ func main() {
 			log.Printf("Actualizacion de logistica recibida. Recalculando balance.")
 			actualizacion := jsonToStruct(d.Body)
 			calcularBalance(actualizacion)
-			actualizacion.Balance = balance_prod
+			actualizacion.Balance = balanceProd
 			actualizarCSV(actualizacion)
 			ordenes = append(ordenes, actualizacion)
-			balance_total = balance_total + ingresos - gastos
-			todos_los_datos[1] = 0
-			todos_los_datos[2] = 0
+			balanceTotal = balanceTotal + ingresos - gastos
+			todoslosDatos[1] = 0
+			todoslosDatos[2] = 0
 
-			todos_los_datos[0] = balance_total
-			todos_los_datos[1] = todos_los_datos[1] + ingresos
-			todos_los_datos[2] = todos_los_datos[2] + gastos
+			todoslosDatos[0] = balanceTotal
+			todoslosDatos[1] = todoslosDatos[1] + ingresos
+			todoslosDatos[2] = todoslosDatos[2] + gastos
 
 			log.Printf("-------------------------------------------------------------------------------------")
 			log.Printf("El estado de la entrega es %s, es de tipo %s, su valor es de %d y los reintentos fueron %d", actualizacion.Estado, actualizacion.Tipo, actualizacion.Valor, actualizacion.Intentos)
 			log.Printf("El balance actual es:")
 			log.Printf("   Ingreso del paquete: %f dignipesos || Gastos asociados a la entrega: %f dignipesos", ingresos, gastos)
-			log.Printf("			Balance Total: %f dignipesos", balance_total)
+			log.Printf("			Balance Total: %f dignipesos", balanceTotal)
 			log.Printf("-------------------------------------------------------------------------------------")
 			log.Printf(" [*] Esperando actualizaciones de logistica. Presiona CTRL + C para salir.")
 		}
