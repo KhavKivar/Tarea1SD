@@ -61,6 +61,52 @@ func failOnError(err error, msg string) {
 	}
 }
 
+type safeStruct struct {
+	retail []paquete
+	mux    sync.Mutex
+}
+
+func (c *safeStruct) getSafe(indice int) paquete {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	return c.retail[indice]
+}
+
+func (c *safeStruct) updateSafe(p1 paquete, indice int) {
+	c.mux.Lock()
+	c.retail[indice] = p1
+	c.mux.Unlock()
+}
+
+func (c *safeStruct) appendSafe(p1 paquete) {
+	c.mux.Lock()
+	c.retail = append(c.retail, p1)
+	c.mux.Unlock()
+}
+
+func (c *safeStruct) lenSafe() int {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	return len(c.retail)
+}
+
+func (c *safeStruct) dequeueSafe() paquete {
+	c.mux.Lock()
+	var p1 paquete
+	p1.id = "null"
+	if len(c.retail) > 0 {
+		p1 = c.retail[0]
+		if len(c.retail) == 1 {
+			c.retail = make([]paquete, 0)
+		} else {
+			c.retail = c.retail[1:]
+		}
+
+	}
+	defer c.mux.Unlock()
+	return p1
+}
+
 //EnviarAFinanzas ...
 func EnviarAFinanzas(pack finanzas) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
@@ -102,6 +148,7 @@ var mutexRetail safeStruct
 var mutexNormal safeStruct
 var mutexPrioritario safeStruct
 
+//Funcion que recibe los pedidos de los clientes
 func (s *server) EnviarPedido(ctx context.Context, in *pb.Orden) (*pb.OrdenRecibida, error) {
 	log.Printf("Pedido Recibido con id %v desde  %v hacia  %v", in.GetId(), in.GetTienda(), in.GetDestino())
 
@@ -172,6 +219,7 @@ func (s *server) SolicitarSeguimiento(ctx context.Context, in *pb.Seguimiento) (
 	return &pb.Estado{Estado: "La orden no existe"}, nil
 }
 
+//Funcion que actualiza los estos de los pedidos
 func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*pb.OrdenRecibida, error) {
 	i := 0
 
@@ -188,6 +236,7 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 	return &pb.OrdenRecibida{Message: "No se encontro la id"}, nil
 }
 
+//Funcion que recibe la informacion si el paquete fue entregado con exito o no
 func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (*pb.OrdenRecibida, error) {
 
 	i := 0
@@ -214,52 +263,7 @@ func (s *server) ResultadoEntrega(ctx context.Context, in *pb.PaqueteRecibido) (
 	return &pb.OrdenRecibida{Message: "Recibido"}, nil
 }
 
-type safeStruct struct {
-	retail []paquete
-	mux    sync.Mutex
-}
-
-func (c *safeStruct) getSafe(indice int) paquete {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-	return c.retail[indice]
-}
-
-func (c *safeStruct) updateSafe(p1 paquete, indice int) {
-	c.mux.Lock()
-	c.retail[indice] = p1
-	c.mux.Unlock()
-}
-
-func (c *safeStruct) appendSafe(p1 paquete) {
-	c.mux.Lock()
-	c.retail = append(c.retail, p1)
-	c.mux.Unlock()
-}
-
-func (c *safeStruct) lenSafe() int {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-	return len(c.retail)
-}
-
-func (c *safeStruct) dequeueSafe() paquete {
-	c.mux.Lock()
-	var p1 paquete
-	p1.id = "null"
-	if len(c.retail) > 0 {
-		p1 = c.retail[0]
-		if len(c.retail) == 1 {
-			c.retail = make([]paquete, 0)
-		} else {
-			c.retail = c.retail[1:]
-		}
-
-	}
-	defer c.mux.Unlock()
-	return p1
-}
-
+//Funcion que recibe un solicitud para entregar un paquete por parte de camiones y le entrega el paquete correspondiente
 func (s *server) SolicitudPaquetes(ctx context.Context, in *pb.TipoCamion) (*pb.Paquete, error) {
 	var y string = strings.TrimSuffix(in.Tipo, "\n")
 	if y == "retails" {
