@@ -61,11 +61,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-<<<<<<< HEAD
 //EnviarAFinanzas ...
-=======
-// Funcion que recibe un struct del tipo finanzas, lo transforma en JSON y lo envia al server
->>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 func EnviarAFinanzas(pack finanzas) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Falla en conectar a RabbitMQ")
@@ -185,10 +181,6 @@ func (s *server) ActualizarEstado(ctx context.Context, in *pb.EstadoPaquete) (*p
 			var obj = allQueue[i]
 			obj.estado = in.GetEstado()
 			allQueue[i] = obj
-<<<<<<< HEAD
-=======
-			log.Println(allQueue[i].estado)
->>>>>>> 5e463dc0360f4ed55c33d064a63e6136fe8870b7
 			return &pb.OrdenRecibida{Message: "Campo actualizado"}, nil
 		}
 		i++
