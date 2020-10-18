@@ -50,7 +50,8 @@ func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string)
 		log.Fatalf("Error al obtener el paquete: %v", err)
 	}
 	var newPaquete paquete
-	if r.GetId() != "null" {
+	if r.GetId() != "null" && r.GetId() != "" {
+
 		log.Printf("Paquete recibido: id:%v, Origen: %v, Destino:%v, Camion encargado: %v", r.GetId(), r.GetOrigen(), r.GetDestino(), idCamion)
 		// Paquete recibido
 		newPaquete.id = r.GetId()
@@ -206,10 +207,10 @@ func entregaPedido(p1 paquete) {
 	p1.intentos = int32(intentos)
 	if entrego {
 		p1.estado = "Recibido"
-		log.Printf("Paquete recibido id: %v por camion: %v\n ", p1.id, p1.tipoCamion)
+		log.Printf("Paquete entegrado al cliente  id: %v por camion: %v", p1.id, p1.tipoCamion)
 	} else {
 		p1.estado = "No Recibido"
-		log.Printf("Paquete no pudo ser recibido id: %v por camion: %v\n ", p1.id, p1.tipoCamion)
+		log.Printf("Paquete no pudo ser entregado al cliente id: %v por camion: %v ", p1.id, p1.tipoCamion)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -218,7 +219,8 @@ func entregaPedido(p1 paquete) {
 }
 
 func entregarPedido(p1 paquete, p2 paquete) {
-	if p2.id != "null" {
+
+	if p2.id != "null" && p2.id != "" {
 		//Entregamos el paquete con mas valor primero
 		if p1.valor >= p2.valor {
 			entregaPedido(p1)
@@ -231,6 +233,7 @@ func entregarPedido(p1 paquete, p2 paquete) {
 		entregaPedido(p1)
 	}
 }
+
 func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) paquete {
 	var pq paquete
 
@@ -248,6 +251,7 @@ func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion strin
 				return pq
 			}
 			if tiempow > tiempo {
+				log.Printf("Segundo paquete no llego en el tiempo esperado: %v millisegundos\n", tiempo)
 				return pq
 			}
 		}
@@ -302,7 +306,7 @@ func main() {
 	fmt.Print("Ingrese el tiempo en milisegundos a esperar por el segundo pedido -- 1000ms = 1seg\n")
 	text, _ := reader.ReadString('\n')
 	tiempo, _ = strconv.Atoi(strings.TrimSuffix(text, "\n"))
-	fmt.Print("Ingrese el retardo en milisegundos en entregar un pedido -- 1000ms = 1seg\\n")
+	fmt.Print("Ingrese el retardo en milisegundos en entregar un pedido -- 1000ms = 1seg\n")
 	reader = bufio.NewReader(os.Stdin)
 	text, _ = reader.ReadString('\n')
 	tiempoEntrega, _ = strconv.Atoi(strings.TrimSuffix(text, "\n"))

@@ -1,17 +1,8 @@
 id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado
-SA1554KF,retail,10,tienda-A,casa-A,0,,Retails 2,En proceso de entrega
-SA5698PO,retail,110,tienda-C,casa-C,0,,Retails 2,En proceso de entrega
-SA1589GD,retail,100,tienda-B,casa-Q,0,,Retails 2,En proceso de entrega
-SA8859SS,retail,15,tienda-C,casa-A,0,,Retails 2,En proceso de entrega
-SA1597EF,retail,20,tienda-A,casa-F,0,,Retails 2,En proceso de entrega
-SA3574FG,retail,120,tienda-B,casa-U,0,,Retails 2,En proceso de entrega
-SA1937JH,retail,6,tienda-C,casa-N,0,,Retails 2,En proceso de entrega
-SA5648AA,retail,80,tienda-B,casa-A,0,,Retails 2,En proceso de entrega
-SA6644DS,retail,30,tienda-A,casa-A,0,,Retails 2,En proceso de entrega
-SA5974AA,retail,105,tienda-C,casa-C,0,,Retails 2,En proceso de entrega
 BE785,prioritario,8,pyme,casa-E,0,,Retails 2,En proceso de entrega
-PF111,prioritario,10,pyme,casa-N,0,,Retails 2,En proceso de entrega
+PF225,prioritario,25,pyme,casa-P,0,,Retails 2,En proceso de entrega
 PF452,prioritario,115,pyme,casa-I,0,,Retails 2,En proceso de entrega
-OF352,prioritario,9,pyme,casa-C,0,,Retails 2,En proceso de entrega
+DE654,prioritario,11,pyme,casa-V,0,,Retails 2,En proceso de entrega
+DE245,prioritario,18,pyme,casa-Y,0,,Retails 2,En proceso de entrega
 CC175,prioritario,6,pyme,casa-A,0,,Retails 2,En proceso de entrega
-CC147,prioritario,14,pyme,casa-C,0,,Retails 2,En proceso de entrega
+GG458,prioritario,3,pyme,casa-C,0,,Retails 2,En proceso de entrega
