@@ -99,7 +99,7 @@ func main() {
 	//REMOVE FILE
 	e := os.Remove("ordenes.csv")
 	if e != nil {
-		log.Fatal(e)
+		os.Create("ordenes.csv")
 
 	}
 	balanceTotal = 0

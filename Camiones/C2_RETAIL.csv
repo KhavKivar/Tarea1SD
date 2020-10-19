@@ -1,6 +1,1 @@
 id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado
-BE785,prioritario,8,pyme,casa-E,0,,Retails 2,En proceso de entrega
-PF654,prioritario,50,pyme,casa-B,0,,Retails 2,En proceso de entrega
-DE786,prioritario,15,pyme,casa-Z,0,,Retails 2,En proceso de entrega
-CC175,prioritario,6,pyme,casa-A,0,,Retails 2,En proceso de entrega
-GG458,prioritario,3,pyme,casa-C,0,,Retails 2,En proceso de entrega

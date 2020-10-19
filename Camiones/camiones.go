@@ -42,6 +42,7 @@ var listRetail []paquete
 var listRetail2 []paquete
 var listNormal []paquete
 
+//recibe un paquete de logistica, si hay
 func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) (bool, paquete) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -90,8 +91,7 @@ func getPaquete(c pb.LogisticaClienteClient, tipoCamion string, idCamion string)
 		if idCamion == "normal" {
 			newPaquete.tipoCamion = idCamion
 			listNormal = append(listNormal, newPaquete)
-			newPaquete.tipoCamion = idCamion
-			listRetail2 = append(listRetail2, newPaquete)
+
 			f, err := os.OpenFile("C3_NORMAL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				log.Println(err)
@@ -114,6 +114,8 @@ func random80() bool {
 	}
 	return false
 }
+
+//actualizar valor en memoria
 func updateValue(id string, est string, fecha string, intentos int32) {
 	i := 0
 	for i < len(allPedidos) {
@@ -129,6 +131,7 @@ func updateValue(id string, est string, fecha string, intentos int32) {
 	}
 }
 
+//simular la entrega del cliente
 func clienteRecibe(maxIntentos int) (int, bool) {
 	//Se Envia
 	intentos := 0
@@ -179,6 +182,7 @@ func clienteRecibe(maxIntentos int) (int, bool) {
 	return -1, false
 }
 
+//se envia el estado de un paquete
 func sendEstado(p1 paquete) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -186,6 +190,7 @@ func sendEstado(p1 paquete) {
 	log.Printf("M: %v", r.GetMessage())
 }
 
+//funcion que entegra el resultado del envio a logistica (ENTREGADO O NO ENTREGADO)
 func entregaPedido(p1 paquete) {
 	var maxInt = 3
 	//Si es pyme calculamos el maxInt
@@ -216,6 +221,7 @@ func entregaPedido(p1 paquete) {
 	defer cancel()
 	r, _ := cb.ResultadoEntrega(ctx, &pb.PaqueteRecibido{Id: p1.id, Intentos: p1.intentos, Estado: p1.estado, Tipo: p1.tipo})
 	log.Printf("M: %v", r.GetMessage())
+	updateValue(p1.id, p1.estado, p1.fechaEntrega, p1.intentos)
 }
 
 func entregarPedido(p1 paquete, p2 paquete) {
@@ -234,6 +240,7 @@ func entregarPedido(p1 paquete, p2 paquete) {
 	}
 }
 
+//Esperar por el segundo
 func logicSegundo(c pb.LogisticaClienteClient, tipoCamion string, idCamion string) paquete {
 	var pq paquete
 
@@ -284,7 +291,7 @@ func main() {
 	os.Remove("C1_RETAIL.csv")
 	os.Remove("C2_RETAIL.csv")
 	os.Remove("C3_NORMAL.csv")
-	f, err := os.OpenFile("C1_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, _ := os.OpenFile("C1_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	defer f.Close()
 	if _, err := f.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err != nil {
 		log.Println(err)
@@ -322,14 +329,113 @@ func main() {
 	var w sync.WaitGroup
 	var w2 sync.WaitGroup
 	var w3 sync.WaitGroup
+	fmt.Print("Esperando por paquetes........\n")
+	fmt.Print("Si quiere salir de forma segura, pulse z. Se actualizaran la informacion de los archivos\n")
 	go dispatcherR(c, &w)
 	go dispatcherN(c, &w2)
 	dispatcherR2(c, &w3)
 }
 
+func searchValueAndUpdate(p1 paquete) {
+	if p1.tipoCamion == "Retails 1" {
+		for i := 0; i < len(listRetail); i++ {
+			if listRetail[i].id == p1.id {
+				var x = listRetail[i]
+				fmt.Println("Estado:", p1.estado)
+				x.estado = p1.estado
+				x.fechaEntrega = p1.fechaEntrega
+				x.intentos = p1.intentos
+				listRetail[i] = x
+				return
+			}
+		}
+	}
+	if p1.tipoCamion == "Retails 2" {
+		for i := 0; i < len(listRetail2); i++ {
+			if listRetail2[i].id == p1.id {
+				var x = listRetail2[i]
+				fmt.Println("Estado:", p1.estado)
+				x.estado = p1.estado
+				x.fechaEntrega = p1.fechaEntrega
+				x.intentos = p1.intentos
+				listRetail2[i] = x
+				return
+			}
+		}
+	}
+	if p1.tipoCamion == "normal" {
+		for i := 0; i < len(listNormal); i++ {
+			if listNormal[i].id == p1.id {
+				var x = listNormal[i]
+				fmt.Println("Estado:", p1.estado)
+				x.estado = p1.estado
+				x.fechaEntrega = p1.fechaEntrega
+				x.intentos = p1.intentos
+				listNormal[i] = x
+				return
+			}
+		}
+	}
+
+}
+
+func actualizarArchivos() {
+	//actualizar struct
+	for i := 0; i < len(allPedidos); i++ {
+		searchValueAndUpdate(allPedidos[i])
+	}
+
+	//Update files
+	os.Remove("C1_RETAIL.csv")
+	os.Remove("C2_RETAIL.csv")
+	os.Remove("C3_NORMAL.csv")
+
+	f, _ := os.OpenFile("C1_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if _, err := f.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+	for i := 0; i < len(listRetail); i++ {
+		if _, err := f.WriteString(listRetail[i].id + "," + listRetail[i].tipo + "," + fmt.Sprint(listRetail[i].valor) + "," + listRetail[i].origen + "," + listRetail[i].destino + "," + fmt.Sprint(listRetail[i].intentos) + "," + listRetail[i].fechaEntrega + "," + listRetail[i].tipoCamion + "," + listRetail[i].estado + "\n"); err != nil {
+			log.Println(err)
+		}
+	}
+
+	f1, _ := os.OpenFile("C2_RETAIL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if _, err := f1.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err != nil {
+		log.Println(err)
+	}
+	defer f1.Close()
+	for i := 0; i < len(listRetail2); i++ {
+		if _, err := f1.WriteString(listRetail2[i].id + "," + listRetail2[i].tipo + "," + fmt.Sprint(listRetail2[i].valor) + "," + listRetail2[i].origen + "," + listRetail2[i].destino + "," + fmt.Sprint(listRetail2[i].intentos) + "," + listRetail2[i].fechaEntrega + "," + listRetail2[i].tipoCamion + "," + listRetail2[i].estado + "\n"); err != nil {
+			log.Println(err)
+		}
+	}
+	f2, _ := os.OpenFile("C3_NORMAL.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if _, err := f2.WriteString("id,tipo,valor,origen,destino,intentos,fechaEntrega,tipoCamion,estado\n"); err != nil {
+		log.Println(err)
+	}
+
+	defer f2.Close()
+	for i := 0; i < len(listNormal); i++ {
+		if _, err := f2.WriteString(listNormal[i].id + "," + listNormal[i].tipo + "," + fmt.Sprint(listNormal[i].valor) + "," + listNormal[i].origen + "," + listNormal[i].destino + "," + fmt.Sprint(listNormal[i].intentos) + "," + listNormal[i].fechaEntrega + "," + listNormal[i].tipoCamion + "," + listNormal[i].estado + "\n"); err != nil {
+			log.Println(err)
+		}
+	}
+	os.Exit(0)
+
+}
+
 func dispatcherR(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
 	r1 := time.NewTicker(500 * time.Millisecond)
+
 	for {
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		if text == "z\n" {
+			actualizarArchivos()
+
+		}
 		select {
 		case <-r1.C:
 			wg.Add(1)
@@ -341,7 +447,9 @@ func dispatcherR(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
 
 func dispatcherN(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
 	r1 := time.NewTicker(500 * time.Millisecond)
+
 	for {
+
 		select {
 		case <-r1.C:
 			wg.Add(1)
@@ -352,6 +460,7 @@ func dispatcherN(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
 
 }
 func dispatcherR2(c pb.LogisticaClienteClient, wg *sync.WaitGroup) {
+
 	r1 := time.NewTicker(500 * time.Millisecond)
 	for {
 		select {

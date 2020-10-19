@@ -305,6 +305,7 @@ func runServer(l net.Listener) {
 	s := grpc.NewServer()
 	pb.RegisterLogisticaClienteServer(s, &server{})
 	log.Println("Server corriendo en puerto 50051 y 50052")
+
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
