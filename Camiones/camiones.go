@@ -136,10 +136,18 @@ func clienteRecibe(maxIntentos int) (int, bool) {
 	//Se Envia
 	intentos := 0
 	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
-	if random80() {
+	var rand801 = random80()
+	if rand801 || maxIntentos == intentos {
+		if maxIntentos == intentos {
+			if rand801 {
+				return intentos, true
+			}
+			return intentos, false
+		}
 		return intentos, true
 
 	}
+
 	//Primer intento
 	intentos++
 	time.Sleep(time.Duration(tiempoEntrega) * time.Millisecond)
@@ -196,9 +204,6 @@ func entregaPedido(p1 paquete) {
 	//Si es pyme calculamos el maxInt
 	if p1.origen == "pyme" {
 		maxInt = int(math.Floor(float64(p1.valor) / 10))
-		if maxInt == 0 {
-			maxInt++
-		}
 		if maxInt > 2 {
 			maxInt = 2
 		}
@@ -330,7 +335,7 @@ func main() {
 	var w2 sync.WaitGroup
 	var w3 sync.WaitGroup
 	fmt.Print("Esperando por paquetes........\n")
-	fmt.Print("Si quiere salir de forma segura, pulse z. Se actualizaran la informacion de los archivos\n")
+	fmt.Print("Si quiere salir de forma segura, ingrese z. Se actualizaran la informacion de los archivos\n")
 	go dispatcherR(c, &w)
 	go dispatcherN(c, &w2)
 	dispatcherR2(c, &w3)
